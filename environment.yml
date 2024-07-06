@@ -1,0 +1,4 @@
+name: my_project_env
+channels:
+  - defaults
+prefix: /home/yeralash/anaconda3/envs/my_project_env
