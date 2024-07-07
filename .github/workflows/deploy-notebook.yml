@@ -23,22 +23,17 @@ jobs:
         run: conda env create -f environment.yml
 
       - name: Initialize conda
+        run: conda init bash
+
+      - name: Run remaining steps in a new shell
         run: |
-          conda init bash
+          bash -l -c "
           source ~/.bashrc
-
-      - name: Activate environment
-        run: |
           conda activate meeting_miner_39
-
-      - name: Install additional dependencies
-        run: |
           conda install -c conda-forge jupyter nbconvert
-
-      - name: Convert notebook to HTML
-        run: |
           jupyter nbconvert --to html main.ipynb
-          
+          "
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
