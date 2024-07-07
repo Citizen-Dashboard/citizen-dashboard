@@ -12,23 +12,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Set up Anaconda
+      - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: "3.9"
-          activate-environment: meeting_miner_39
-          environment-file: environment.yml  # Optional, if you have an environment.yml file
+          activate-environment: false
 
-      - name: Install dependencies
+      - name: Create environment
+        run: conda env create -f environment.yml
+
+      - name: Initialize conda
+        run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate meeting_miner_39
+
+      - name: Install additional dependencies
         run: |
           conda install -c conda-forge jupyter nbconvert
           conda install -c conda-forge pytorch torchvision torchaudio transformers beautifulsoup4 requests
           
       - name: Convert notebook to HTML
         run: |
-            source activate meeting_miner_39
-            jupyter nbconvert --to html main.ipynb
+          conda activate meeting_miner_39
+          jupyter nbconvert --to html main.ipynb
+          
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
