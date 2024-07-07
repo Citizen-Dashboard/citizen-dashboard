@@ -27,8 +27,7 @@ jobs:
           
       - name: Convert notebook to HTML
         run: |
-            conda init
-            conda activate meeting_miner_39
+            source activate meeting_miner_39
             jupyter nbconvert --to html main.ipynb
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
