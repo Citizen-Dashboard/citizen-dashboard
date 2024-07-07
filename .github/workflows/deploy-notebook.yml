@@ -31,8 +31,7 @@ jobs:
       - name: Install additional dependencies
         run: |
           conda install -c conda-forge jupyter nbconvert
-          conda install -c conda-forge pytorch torchvision torchaudio transformers beautifulsoup4 requests
-          
+
       - name: Convert notebook to HTML
         run: |
           conda activate meeting_miner_39
