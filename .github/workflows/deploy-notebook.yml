@@ -26,7 +26,10 @@ jobs:
         run: |
           conda init bash
           source ~/.bashrc
-          conda activate meeting_miner_39
+
+      - name: Activate environment
+        run: |
+          source activate meeting_miner_39
 
       - name: Install additional dependencies
         run: |
@@ -34,7 +37,6 @@ jobs:
 
       - name: Convert notebook to HTML
         run: |
-          conda activate meeting_miner_39
           jupyter nbconvert --to html main.ipynb
           
       - name: Deploy to GitHub Pages
