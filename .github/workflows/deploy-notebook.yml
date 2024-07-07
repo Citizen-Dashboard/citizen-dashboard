@@ -17,7 +17,7 @@ jobs:
         with:
           auto-update-conda: true
           python-version: "3.9"
-          activate-environment: myenv
+          activate-environment: meeting_miner_39
           environment-file: environment.yml  # Optional, if you have an environment.yml file
 
       - name: Install dependencies
@@ -27,8 +27,8 @@ jobs:
           
       - name: Convert notebook to HTML
         run: |
-          jupyter nbconvert --to html main.ipynb
-          
+            conda activate meeting_miner_39
+            jupyter nbconvert --to html main.ipynb
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
