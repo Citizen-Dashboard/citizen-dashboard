@@ -1,0 +1,37 @@
+name: Deploy Jupyter Notebook to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Anaconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: "3.9"
+          activate-environment: myenv
+          environment-file: environment.yml  # Optional, if you have an environment.yml file
+
+      - name: Install dependencies
+        run: |
+          conda install -c conda-forge jupyter nbconvert
+          conda install -c conda-forge pytorch torchvision torchaudio transformers beautifulsoup4 requests
+          
+      - name: Convert notebook to HTML
+        run: |
+          jupyter nbconvert --to html main.ipynb
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
