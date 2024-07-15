@@ -4,7 +4,6 @@ from src import (
     create_topic_model, 
     fit_transform_topics, 
     fetch_data, 
-    preprocess_data, 
     generate_embeddings, 
     reduce_dimensionality, 
     perform_clustering
@@ -18,10 +17,10 @@ def main():
     # Fetch data
     base_url = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
     package_id = "members-of-toronto-city-council-voting-record"
-    dataframes = fetch_data(base_url, package_id)
+    combined_df = fetch_data(base_url, package_id, from_local=True, local_file_path="./data/combined_data.parquet")
 
     # Preprocess data
-    combined_df, texts = preprocess_data(dataframes)
+    texts = combined_df['Agenda Item Title'].unique()
 
     # Generate embeddings
     embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device='cuda')
