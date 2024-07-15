@@ -1,1 +1,12 @@
 .vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.parquet
+*.html
+*.csv
+*.png
+*.npy
+data/processed/
+results/
