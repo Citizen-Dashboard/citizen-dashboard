@@ -1,11 +1,14 @@
 import logging
-from data_fetcher import fetch_data
-from data_preprocessor import preprocess_data
-from embedding_generator import generate_embeddings
-from dimensionality_reducer import reduce_dimensionality
-from clusterer import perform_clustering
-from topic_modeler import create_topic_model, fit_transform_topics
-from visualizer import visualize_documents
+from src import (
+    visualize_documents, 
+    create_topic_model, 
+    fit_transform_topics, 
+    fetch_data, 
+    preprocess_data, 
+    generate_embeddings, 
+    reduce_dimensionality, 
+    perform_clustering
+    )
 from sentence_transformers import SentenceTransformer
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
