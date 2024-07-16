@@ -1,43 +1,43 @@
-import numpy as np
+import math
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
-from typing import List
 from umap import UMAP
+import logging 
 
-def visualize_documents(topic_model,
-                        docs: List[str],
-                        topics: List[int] = None,
-                        embeddings: np.ndarray = None,
-                        reduced_embeddings: np.ndarray = None,
-                        sample: float = None,
-                        hide_annotations: bool = False,
-                        hide_document_hover: bool = False,
-                        custom_labels: bool = False,
-                        width: int = 1200,
-                        height: int = 750):
-    """ Visualize documents and their topics in 3D
+logger = logging.getLogger(__name__)
 
-    Arguments:
-        topic_model: A fitted BERTopic instance.
-        docs: The documents you used when calling either `fit` or `fit_transform`
-        topics: A selection of topics to visualize.
-                Not to be confused with the topics that you get from `.fit_transform`.
-                For example, if you want to visualize only topics 1 through 5:
-                `topics = [1, 2, 3, 4, 5]`.
-        embeddings: The embeddings of all documents in `docs`.
-        reduced_embeddings: The 3D reduced embeddings of all documents in `docs`.
-        sample: The percentage of documents in each topic that you would like to keep.
-                Value can be between 0 and 1. Setting this value to, for example,
-                0.1 (10% of documents in each topic) makes it easier to visualize
-                millions of documents as a subset is chosen.
-        hide_annotations: Hide the names of the traces on top of each cluster.
-        hide_document_hover: Hide the content of the documents when hovering over
-                             specific points. Helps to speed up generation of visualization.
-        custom_labels: Whether to use custom topic labels that were defined using
-                       `topic_model.set_topic_labels`.
-        width: The width of the figure.
-        height: The height of the figure.
-    """
+def preprocess_data(dataframes):
+    logger.info("Preprocessing data...")
+    if not dataframes:
+        logger.warning("No dataframes to process")
+        return None, []
+
+    combined_df = pd.concat(dataframes, ignore_index=True)
+    logger.info("Combined all DataFrames into one")
+    logger.info(f"Combined DataFrame shape: {combined_df.shape}")
+
+    # Extract unique agenda items and their corresponding voting data
+    unique_agenda_items = combined_df.groupby('Agenda Item Title').first().reset_index()
+    
+    texts = unique_agenda_items['Agenda Item Title'].tolist()
+    
+    # Extract voting data and results
+    voting_data = unique_agenda_items[['Agenda Item Title', 'Vote', 'Result']]
+    
+    # Get the list of council members
+    council_members = combined_df['First Name'].unique().tolist()
+    
+    # Add voting data for each council member
+    for member in council_members:
+        voting_data[member] = combined_df[combined_df['First Name'] == member].groupby('Agenda Item Title')['Vote'].first()
+
+    logger.info(f"Extracted {len(texts)} unique texts from the 'Agenda Item Title' column")
+    return voting_data, texts
+
+def  visualize_documents(topic_model, docs, voting_data, topics=None, embeddings=None, reduced_embeddings=None, sample=None,
+                        hide_annotations=False, hide_document_hover=False, custom_labels=False, width=1200, height=750):
+    """ Visualize documents and their topics in 3D """
     topic_per_doc = topic_model.topics_
 
     # Sample the data to optimize for visualization and dimensionality reduction
@@ -90,6 +90,26 @@ def visualize_documents(topic_model,
     else:
         names = [f"{topic}_" + "_".join([word for word, value in topic_model.get_topic(topic)][:3]) for topic in unique_topics]
 
+    # Prepare hover text
+    hover_texts = []
+    for doc in df["doc"]:
+        vote_info = voting_data[voting_data['Agenda Item Title'] == doc].iloc[0]
+        hover_text = f"<b>{doc}</b><br>"
+        hover_text += f"Date/Time: {vote_info['Date/Time']}<br>"
+        hover_text += f"Result: {vote_info['Result']}<br>"
+        hover_text += f"Overall Vote: {vote_info['Vote']}<br><br>"
+        hover_text += "Council Member Votes:<br>"
+        for column in vote_info.index:
+            if "Vote_" in column:
+                if not pd.isnull(vote_info[column]):
+                    hover_text += f"{column}: {vote_info[column]}<br>"
+        
+        # Create a hyperlink for the "Read More" text
+        read_more_link = f"<a href='https://secure.toronto.ca/council/agenda-item.do?item={vote_info['Agenda Item #']}' target='_blank'>Read More</a>"
+        hover_text += f"{read_more_link}<br>"
+        
+        hover_texts.append(hover_text)
+
     # Visualize
     fig = go.Figure()
 
@@ -105,7 +125,7 @@ def visualize_documents(topic_model,
             x=selection.x,
             y=selection.y,
             z=selection.z,
-            hovertext=selection.doc if not hide_document_hover else None,
+            hovertext=[hover_texts[i] for i in selection.index] if not hide_document_hover else None,
             hoverinfo="text",
             mode='markers+text',
             name="other",
@@ -126,7 +146,7 @@ def visualize_documents(topic_model,
                     x=selection.x,
                     y=selection.y,
                     z=selection.z,
-                    hovertext=selection.doc if not hide_document_hover else None,
+                    hovertext=[hover_texts[i] for i in selection.index] if not hide_document_hover else None,
                     hoverinfo="text",
                     text=selection.text,
                     mode='markers+text',
@@ -167,23 +187,3 @@ def visualize_documents(topic_model,
 
     return fig
 
-if __name__ == "__main__":
-    # For testing purposes
-    from bertopic import BERTopic
-    from umap import UMAP
-    from hdbscan import HDBSCAN
-    import numpy as np
-
-    # Sample data
-    sample_texts = ["This is a sample text", "Another example sentence", "Topic modeling is interesting"]
-    sample_embeddings = np.random.rand(3, 384)  # 3 samples with 384 dimensions
-
-    # Create a sample topic model
-    umap_model = UMAP(n_components=3, random_state=42)
-    hdbscan_model = HDBSCAN(min_cluster_size=2, min_samples=1)
-    topic_model = BERTopic(umap_model=umap_model, hdbscan_model=hdbscan_model)
-    topic_model.fit(sample_texts, sample_embeddings)
-
-    # Visualize
-    fig = visualize_documents(topic_model, sample_texts, embeddings=sample_embeddings)
-    fig.show()

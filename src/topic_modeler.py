@@ -42,7 +42,7 @@ class POSFilteredTfidfVectorizer:
     def get_feature_names_out(self):
         return self.count_vectorizer.get_feature_names_out()
 
-def create_topic_model(umap_model, hdbscan_model, embedding_model):
+def create_topic_model(umap_model, hdbscan_model, embedding_model, top_n_words=10):
     logger.info("Creating BERTopic model with improved representation")
     keybert_model = KeyBERTInspired()
     mmr_model = MaximalMarginalRelevance(diversity=0.3)
@@ -55,7 +55,7 @@ def create_topic_model(umap_model, hdbscan_model, embedding_model):
         vectorizer_model=vectorizer_model,
         representation_model=[keybert_model, mmr_model],
         embedding_model=embedding_model,  # Pass the embedding model here
-        top_n_words=10,
+        top_n_words=top_n_words,
         verbose=True
     )
     return topic_model

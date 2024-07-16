@@ -4,12 +4,11 @@ import torch
 
 logger = logging.getLogger(__name__)
 
-def generate_embeddings(texts, model_name="all-MiniLM-L6-v2"):
+def generate_embeddings(texts, model: SentenceTransformer):
     logger.info("Loading pre-trained sentence transformer model")
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    embedding_model = SentenceTransformer(model_name, device=device)
+    embedding_model = model
 
-    logger.info(f"Generating embeddings using {device.upper()}")
+    logger.info(f"Generating embeddings")
     embeddings = embedding_model.encode(texts, show_progress_bar=True)
     logger.info(f"Embeddings generated with shape: {embeddings.shape}")
 
