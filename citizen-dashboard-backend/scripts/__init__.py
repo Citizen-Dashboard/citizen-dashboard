@@ -1,4 +1,4 @@
-from .scripts.data_fetcher import fetch_data
+from .data_fetcher import fetch_data
 from .dimensionality_reducer import reduce_dimensionality
 from .embedding_generator import generate_embeddings
 from .topic_modeler import fit_transform_topics, create_topic_model
