@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "citizen-dashboard"
+name = "citizen-dashboard-api"
 version = "0.1.0"
 description = ""
 authors = ["yeralash <mishaneiman@gmail.com>"]
@@ -7,18 +7,15 @@ license = "MIT"
 readme = "README.md"
 package-mode = false
 
+
 [tool.poetry.dependencies]
 python = "^3.12"
-requests = "^2.32.3"
-beautifulsoup4 = "^4.12.3"
+psycopg2-binary = "^2.9.9"
+Flask = "^3.0.3"
+sqlalchemy = "^2.0.32"
 pandas = "^2.2.2"
 pyarrow = "^17.0.0"
-jupyter = "^1.0.0"
-sqlalchemy = "^2.0.32"
-psycopg2-binary = "^2.9.9"
-flask = "^3.0.3"
 flask-cors = "^4.0.1"
-
 
 
 [build-system]

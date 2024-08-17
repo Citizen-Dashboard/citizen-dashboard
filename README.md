@@ -1,4 +1,6 @@
 # Citizen Dashboard
+
+## Scraper
 Citizen Dashboard makes involvement in civic discourse engaging, intuitive and fun! Currently, only the data acquisition utility is functional. To begin, simply run:
 
 ```citizen-dashboard-backend/scripts/data_fetcher.py```
@@ -11,3 +13,7 @@ What this does:
 The script should generate two files in the `data` directory:
 - `combined_voting_data.parquet` - Contains the combined voting data for City Council.
 - `items_info.parquet` - Contains parsed agenda item information from the City Council website.
+
+## Setting up Docker Environment
+1. Initialize docker swarm. Set advertise address ```docker swarm init --advertise-addr <eth0 ip addr>```
+2. Create secret for SQL database
