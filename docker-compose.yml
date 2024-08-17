@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    build:
+      context: ./citizen-dashboard-backend/db
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: agenda_items
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/citizen_dashboard_sql_password
+    secrets:
+      - citizen_dashboard_sql_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./citizen-dashboard-backend/backend
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: agenda_items
+      DB_USER: postgres
+      DB_PASSWORD_FILE: /run/secrets/citizen_dashboard_sql_password
+    depends_on:
+      - db
+    secrets:
+      - citizen_dashboard_sql_password
+    ports:
+      - "5000:5000"
+    command: ["sh", "-c", "python populate_db.py && python search_api.py"]
+
+  frontend:
+    build:
+      context: ./citizen-dashboard-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+
+secrets:
+  citizen_dashboard_sql_password:
+    file: secrets/citizen_dashboard_sql_password.txt
