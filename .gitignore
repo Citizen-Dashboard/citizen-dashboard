@@ -25,3 +25,9 @@ dist-ssr
 
 # Data
 data/*
+*.parquet
+*.csv
+
+# Secrets
+secrets/*
+
