@@ -2,9 +2,8 @@
 FROM postgres:16
 
 # Environment variables for PostgreSQL
-ENV POSTGRES_DB=agenda_items
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD_FILE=/run/secrets/citizen_dashboard_sql_password
+ENV POSTGRES_DB ${DB_NAME}
+ENV POSTGRES_USER ${DB_USER}
 
 # Run the database
 CMD ["postgres"]

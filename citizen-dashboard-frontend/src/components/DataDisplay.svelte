@@ -6,7 +6,7 @@
     let data = [];
 
     async function fetchData(searchTerm) {
-        const response = await fetch(`http://localhost:5000/search?term=${searchTerm}`);
+        const response = await fetch(`http://localhost:${import.meta.env.VITE_SEARCH_API_PORT}/search?term=${searchTerm}`);
         const result = await response.json();
         data = result;
     }

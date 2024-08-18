@@ -5,6 +5,13 @@ import os
 import re
 import logging
 
+# Load configuration from environment variables
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -23,12 +30,9 @@ df.columns = [slugify(col) for col in df.columns]
 for column in df.columns:
     df[column] = df[column].apply(lambda x: json.dumps(x) if pd.notnull(x) else None)
 
-# Read the PostgreSQL database password from Docker secret
-with open('/run/secrets/citizen_dashboard_sql_password', 'r') as file:
-    password = file.read().strip()
 
 # Create a connection to the PostgreSQL database
-engine = create_engine(f'postgresql://postgres:{password}@db:5432/agenda_items')
+engine = create_engine(f'postgresql://postgres:{DB_PASSWORD}@db:{DB_PORT}/{DB_NAME}')
 
 # Define the table schema with JSONB columns
 create_table_query = """

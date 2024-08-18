@@ -31,6 +31,9 @@ data/*
 # Secrets
 secrets/*
 
+# Environment variable files
+*.env
+
 # RAG
 ragtest/
 

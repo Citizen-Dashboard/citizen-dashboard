@@ -1,3 +1,4 @@
+import configparser
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
@@ -10,23 +11,21 @@ app = Flask(__name__)
 CORS(app)
 
 # Database connection details
-DB_NAME = os.getenv('DB_NAME', 'agenda_items')
-DB_USER = os.getenv('DB_USER', 'postgres')
-DB_HOST = os.getenv('DB_HOST', 'localhost')
-DB_PORT = os.getenv('DB_PORT', '5432')
-DB_PASSWORD_FILE = os.getenv('DB_PASSWORD_FILE', '/run/secrets/citizen_dashboard_sql_password')
+db_name = os.getenv('DB_NAME')
+db_user = os.getenv('DB_USER')
+db_host = os.getenv('DB_HOST')
+db_port = os.getenv('DB_PORT')
+search_api_port = os.getenv('SEARCH_API_PORT')
+db_password = os.getenv('DB_PASSWORD')
 
 def get_db_connection():
     """Create a database connection."""
-    with open(DB_PASSWORD_FILE, 'r') as file:
-        db_password = file.read().strip()
-    
     return psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
+        dbname=db_name,
+        user=db_user,
         password=db_password,
-        host=DB_HOST,
-        port=DB_PORT
+        host=db_host,
+        port=db_port
     )
 
 @app.route('/search', methods=['GET'])
@@ -68,4 +67,4 @@ def search():
     return jsonify(results_json)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=int(search_api_port))
