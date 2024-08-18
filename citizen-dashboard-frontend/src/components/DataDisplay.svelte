@@ -4,25 +4,16 @@
     import SearchBar from './SearchBar.svelte';
 
     let data = [];
-    let filteredData = [];
 
-    async function fetchData() {
-        const response = await fetch('http://localhost:5000/search?term=');
+    async function fetchData(searchTerm) {
+        const response = await fetch(`http://localhost:5000/search?term=${searchTerm}`);
         const result = await response.json();
         data = result;
-        filteredData = result;
     }
 
-    onMount(() => {
-        fetchData();
-    });
-
     function handleSearch(event) {
-        const searchTerm = event.detail.toLowerCase();
-        filteredData = data.filter(item =>
-            item.title.toLowerCase().includes(searchTerm) ||
-            item.summary.toLowerCase().includes(searchTerm)
-        );
+        const searchTerm = event.detail;
+        fetchData(searchTerm);
     }
 </script>
 
@@ -30,20 +21,8 @@
     <SearchBar on:search={handleSearch} />
 
     <div class="data-list">
-        {#each filteredData as item (item.id)}
+        {#each data as item}
             <DataRow {item} />
         {/each}
     </div>
 </div>
-
-<style>
-    .data-display {
-        max-width: 600px;
-        margin: 0 auto;
-    }
-    .data-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1em;
-    }
-</style>

@@ -20,7 +20,7 @@ def get_db_connection():
     """Create a database connection."""
     with open(DB_PASSWORD_FILE, 'r') as file:
         db_password = file.read().strip()
-        
+    
     return psycopg2.connect(
         dbname=DB_NAME,
         user=DB_USER,
@@ -38,16 +38,17 @@ def search():
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Determine query based on search term
+    # Query to retrieve search results with full-text search
     if search_term:
         query = sql.SQL("""
-            SELECT *, ts_rank(to_tsvector('english', summary), plainto_tsquery('english', %s)) AS rank
+            SELECT *, ts_rank(to_tsvector('english', summary), to_tsquery('english', %s)) AS rank,
+                   ts_headline('english', summary, to_tsquery('english', %s)) AS headline
             FROM agenda_items
-            WHERE to_tsvector('english', summary) @@ plainto_tsquery('english', %s)
+            WHERE to_tsvector('english', summary) @@ to_tsquery('english', %s)
             ORDER BY rank DESC
             LIMIT 10;
         """)
-        cursor.execute(query, (search_term, search_term))  # Provide the search term twice
+        cursor.execute(query, (search_term, search_term, search_term))  # Provide the search term three times
     else:
         query = sql.SQL("""
             SELECT * FROM agenda_items LIMIT 10;

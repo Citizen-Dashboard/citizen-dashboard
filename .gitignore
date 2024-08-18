@@ -31,3 +31,6 @@ data/*
 # Secrets
 secrets/*
 
+# RAG
+ragtest/
+
