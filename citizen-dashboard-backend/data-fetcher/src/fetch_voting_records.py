@@ -35,7 +35,7 @@ def fetch_voting_records(base_url, package_id):
                 logger.warning(f"Error parsing {resource['name']}: {e}")
             except Exception as e:
                 logger.warning(f"An error occurred while processing {resource['name']}: {e}")
-
+    
     if dataframes:
         combined_df = pd.concat(dataframes, ignore_index=True)
         logger.info("Combined all DataFrames into one")
