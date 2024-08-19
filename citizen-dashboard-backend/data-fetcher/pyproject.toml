@@ -16,6 +16,7 @@ pyarrow = "^17.0.0"
 fastparquet = "^2024.5.0"
 pyjson = "^1.4.1"
 bs4 = "^0.0.2"
+ipdb = "^0.13.13"
 
 [tool.poetry.scripts]
 py-version = "python --version"
