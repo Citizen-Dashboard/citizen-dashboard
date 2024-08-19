@@ -37,3 +37,4 @@ secrets/*
 # RAG
 ragtest/
 
+*__pycache__*
