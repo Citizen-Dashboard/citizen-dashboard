@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "data-fetcher"
+version = "0.1.0"
+description = ""
+authors = ["Michael Korabelnikov <korabel@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+logging = "^0.4.9.6"
+argparse = "^1.4.0"
+pandas = "^2.2.2"
+requests = "^2.32.3"
+pyarrow = "^17.0.0"
+fastparquet = "^2024.5.0"
+pyjson = "^1.4.1"
+bs4 = "^0.0.2"
+
+[tool.poetry.scripts]
+py-version = "python --version"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
