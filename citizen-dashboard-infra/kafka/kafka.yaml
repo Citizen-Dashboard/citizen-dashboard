@@ -34,7 +34,7 @@ spec:
         - name: KAFKA_BROKER_ID
           value: "1"
         - name: KAFKA_ZOOKEEPER_CONNECT
-          value: <ZOOKEEPER-INTERNAL-IP>:2181
+          value: zookeeper-service:2181
         - name: KAFKA_LISTENERS
           value: PLAINTEXT://:9092
         - name: KAFKA_ADVERTISED_LISTENERS
