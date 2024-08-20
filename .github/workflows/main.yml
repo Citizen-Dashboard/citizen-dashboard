@@ -24,7 +24,9 @@ jobs:
         with:
           filters: |
             data-fetcher:
-              - 'citizen-dashboard-backend/data-fetcher/**'  
+              - 'citizen-dashboard-backend/data-fetcher/**'
+            data-store:
+              - 'citizen-dashboard-backend/data-store/**'  
             backend:
               - 'citizen-dashboard-backend/backend/**'
             db:
@@ -51,7 +53,6 @@ jobs:
 ## DATA FETCHER -----------------------------
       - name: Build and push Docker image (data-fetcher)
         if: steps.changes.outputs.data-fetcher == 'true'
-        id: push
         uses: docker/build-push-action@v3
         with:
             context: citizen-dashboard-backend/data-fetcher/.
@@ -67,6 +68,25 @@ jobs:
           kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/deployment.yaml
           kubectl rollout restart deployment data-fetcher -n default
           kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/service.yaml
+
+## DATA STORE -----------------------------
+      - name: Build and push Docker image (data-store)
+        if: steps.changes.outputs.data-store == 'true'
+        uses: docker/build-push-action@v3
+        with:
+            context: citizen-dashboard-backend/data-store/.
+            file: citizen-dashboard-backend/data-store/Dockerfile
+            push: true
+            tags: |
+              korabel/cd-data-store:latest
+              korabel/cd-data-store:${{ github.sha }}
+
+      - name: Deploy service to K8S (data-store)
+        if: steps.changes.outputs.data-store == 'true'
+        run: |
+          kubectl apply -f citizen-dashboard-backend/data-store/deployment/deployment.yaml
+          kubectl rollout restart deployment data-store -n default
+          kubectl apply -f citizen-dashboard-backend/data-store/deployment/service.yaml
 
 ## INFRA -----------------------------
       - name: Configure Infra namespace in K8S

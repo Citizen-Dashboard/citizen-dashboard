@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-store
+  namespace: citizen-dashboard
+spec:
+  selector:
+    app: data-store
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
