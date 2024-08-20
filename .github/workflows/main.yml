@@ -65,8 +65,8 @@ jobs:
         if: steps.changes.outputs.data-fetcher == 'true'
         run: |
           kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/deployment.yaml
-          kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/service.yaml
           kubectl rollout restart deployment data-fetcher -n default
+          kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/service.yaml
 
 ## INFRA -----------------------------
       - name: Configure Infra namespace in K8S
