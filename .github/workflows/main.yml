@@ -41,18 +41,26 @@ jobs:
       - name: Build and push Docker image (data-fetcher)
         if: steps.changes.outputs.data-fetcher == 'true'
         id: push
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@v3
         with:
             context: citizen-dashboard-backend/data-fetcher/.
             file: citizen-dashboard-backend/data-fetcher/Dockerfile
             push: true
-            tags: korabel/citizen-dashboard-repo
-            labels: data-fetcher
-      
+            tags: |
+              korabel/cd-data-fetcher:latest
+              korabel/cd-data-fetcher:${{ github.sha }}
+        
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
         with:
             version: 'v1.30.3'
         id: install
+      
+      - name: Deploy to k8s
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.K8S_CONFIG }}
+        with:
+          args: get pods
 
       

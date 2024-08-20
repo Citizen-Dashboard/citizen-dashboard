@@ -16,12 +16,8 @@ RUN poetry config virtualenvs.create false && poetry install --no-dev
 # Copy the rest of the application code
 COPY . /app
 
-# Copy initialization and data files
-# COPY items_data.csv /app/
-# COPY populate_db.py /app/
-
 # Expose the port the app runs on
 EXPOSE 5000
 
 # Run the application
-CMD ["python", "fetcher.py"]
+CMD ["python", "main.py"]
