@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-fetcher-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-fetcher
+  template:
+    metadata:
+      labels:
+        app: data-fetcher
+    spec:
+      containers:
+      - name: data-fetcher
+        image: korabel/cd-data-fetcher:latest
+        ports:
+        - containerPort: 80
