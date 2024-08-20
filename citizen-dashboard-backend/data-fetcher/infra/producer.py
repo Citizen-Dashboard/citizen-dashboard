@@ -5,7 +5,7 @@ from confluent_kafka import Producer
 
 # Kafka configuration
 KAFKA_CONF = {
-    'bootstrap.servers': 'kafka-service:9092',  # Kafka broker address
+    'bootstrap.servers': 'kafka-broker:9092',  # Kafka broker address
 }
 
 logger = logging.getLogger(__name__)
