@@ -101,7 +101,7 @@ def main():
     # Fetch data
     base_url = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
     package_id = "members-of-toronto-city-council-voting-record"
-    combined_df = fetch_data(base_url, package_id, from_local=True, local_file_path="./data/combined_data.parquet")
+    combined_df = fetch_data(base_url, package_id, from_local=True, local_file_path="./data/combined_voting_data.csv")
     
     # Create full name column
     combined_df['Full Name'] = combined_df['First Name'] + ' ' + combined_df['Last Name']

@@ -1,0 +1,75 @@
+{
+    "columns": [
+        {
+            "name": "item_id",
+            "type": "string",
+            "nullable": false
+        },
+        {
+            "name": "vote",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Vote"
+        },
+        {
+            "name": "motions",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Motions"
+        },
+        {
+            "name": "background_information",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Background Information"
+        },
+        {
+            "name": "decision",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Decision"
+        },
+        {
+            "name": "rulings",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Rulings"
+        },
+        {
+            "name": "communications",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Communications"
+        },
+        {
+            "name": "speakers",
+            "type": "string",
+            "nullable": true,
+            "appears_as": "Speakers"
+        },
+        {
+            "name": "origin",
+            "type": "string",
+            "nullable": true,
+            "appears_as": "Origin"
+        },
+        {
+            "name": "summary",
+            "type": "string",
+            "nullable": true,
+            "appears_as": "Summary"
+        },
+        {
+            "name": "recommendations",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Recommendations"
+        },
+        {
+            "name": "other",
+            "type": "json",
+            "nullable": true,
+            "appears_as": "Other"
+        }
+    ]
+}

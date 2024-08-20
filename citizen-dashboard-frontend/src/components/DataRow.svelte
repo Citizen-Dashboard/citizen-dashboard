@@ -5,11 +5,34 @@
     function toggleExpand() {
         expanded = !expanded;
     }
+
+    function renderAttributeValue(attribute, value) {
+        if (value === null) {
+            return 'Null';
+        } else if (typeof value === 'object') {
+            return Object.keys(value).map(key => {
+                if (key === 'default') {
+                    return value[key];
+                } else {
+                    return `${key}: ${value[key]}`;
+                }
+            }).join(', ');
+        } else {
+            return value;
+        }
+    }
 </script>
 
 <div class="data-row">
-    <h3>{item.title}</h3>
-    <p>{expanded ? item.summary : item.summary.substring(0, 100) + '...'}</p>
+    <h3>{item.item_id}</h3>
+    {#each Object.keys(item) as attribute}
+        {#if attribute !== 'item_id'}
+            <div>
+                <h4>{attribute}</h4>
+                <p>{renderAttributeValue(attribute, item[attribute])}</p>
+            </div>
+        {/if}
+    {/each}
     <button on:click={toggleExpand}>
         {expanded ? 'Show Less' : 'Show More'}
     </button>
@@ -24,6 +47,9 @@
     }
     h3 {
         margin: 0 0 0.5em 0;
+    }
+    h4 {
+        margin: 0 0 0.2em 0;
     }
     p {
         margin: 0;

@@ -15,7 +15,7 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Load the Parquet file
+# Load the CSV file
 df = pd.read_csv('/app/items_data.csv')
 
 # Function to convert column names to slug case
@@ -38,10 +38,10 @@ engine = create_engine(f'postgresql://postgres:{DB_PASSWORD}@db:{DB_PORT}/{DB_NA
 create_table_query = """
 CREATE TABLE IF NOT EXISTS agenda_items (
     id SERIAL PRIMARY KEY,
-    meeting_id TEXT UNIQUE,
+    item_id TEXT UNIQUE,
     {}
 );
-""".format(", ".join([f"{col} JSONB" for col in df.columns if col != 'meeting_id']))
+""".format(", ".join([f"{col} JSONB" for col in df.columns if col != 'item_id']))
 
 # Execute the table creation query
 with engine.connect() as connection:
