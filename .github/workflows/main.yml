@@ -61,24 +61,22 @@ jobs:
               korabel/cd-data-fetcher:latest
               korabel/cd-data-fetcher:${{ github.sha }}
       
-      - name: Deploy to Kubernetes
+      - name: Deploy service to K8S (data-fetcher)
         if: steps.changes.outputs.data-fetcher == 'true'
         run: |
           kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/deployment.yaml
           kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/service.yaml
 
 ## INFRA -----------------------------
-      - name: Deploy to Kubernetes
+      - name: Configure Infra namespace in K8S
         if: steps.changes.outputs.infra == 'true'
         run: |
           kubectl apply -f citizen-dashboard-infra/namespace.yaml
 
 ## KAFKA -----------------------------
-      - name: Deploy to Kubernetes
+      - name: Deploy service to K8S (kafka)
         if: steps.changes.outputs.kafka == 'true'
         run: |
           kubectl apply -f citizen-dashboard-infra/kafka/zookeeper.yaml
           kubectl apply -f citizen-dashboard-infra/kafka/kafka.yaml
-
-
 
