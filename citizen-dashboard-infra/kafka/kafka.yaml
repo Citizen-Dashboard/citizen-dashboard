@@ -4,7 +4,7 @@ metadata:
   labels:
     app: kafka-broker
   name: kafka-broker
-  namespace: infra
+  namespace: citizen-dashboard
 spec:
   ports:
   - port: 9092
@@ -17,7 +17,7 @@ metadata:
   labels:
     app: kafka-broker
   name: kafka-broker
-  namespace: infra
+  namespace: citizen-dashboard
 spec:
   replicas: 1
   selector:
