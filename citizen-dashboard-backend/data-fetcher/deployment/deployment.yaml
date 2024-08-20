@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: data-fetcher-deployment
+  name: data-fetcher
+  namespace: default
 spec:
   replicas: 1
   selector:

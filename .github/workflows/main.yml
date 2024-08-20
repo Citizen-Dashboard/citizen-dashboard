@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: citizen-dashboard-backend/data-fetcher
+        working-directory: .
 
     steps:
       - uses: actions/checkout@v2 
@@ -31,13 +31,24 @@ jobs:
               - 'citizen-dashboard-backend/db/**'
             scripts:
               - 'citizen-dashboard-backend/scripts/**'
+            infra:
+              - 'citizen-dashboard-infra/**'
+            kafka:
+              - 'citizen-dashboard-infra/kafka/**'
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
-  
+      
+      - name: Set up Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_CONFIG }}
+
+## DATA FETCHER -----------------------------
       - name: Build and push Docker image (data-fetcher)
         if: steps.changes.outputs.data-fetcher == 'true'
         id: push
@@ -49,27 +60,25 @@ jobs:
             tags: |
               korabel/cd-data-fetcher:latest
               korabel/cd-data-fetcher:${{ github.sha }}
-       
-      - name: Set up Kubernetes context
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.K8S_CONFIG }}
       
       - name: Deploy to Kubernetes
+        if: steps.changes.outputs.data-fetcher == 'true'
         run: |
-          kubectl apply -f deployment/deployment.yaml
-          kubectl apply -f deployment/service.yaml
+          kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/deployment.yaml
+          kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/service.yaml
 
-      # - name: Install kubectl
-      #   uses: azure/setup-kubectl@v4
-      #   with:
-      #       version: 'v1.30.3'
-      #   id: install
-      
-      # - name: Deploy to k8s
-      #   uses: actions-hub/kubectl@master
-      #   env:
-      #     KUBE_CONFIG: ${{ secrets.K8S_CONFIG }}
-      #   with:
-      #     args: get pods
+## INFRA -----------------------------
+      - name: Deploy to Kubernetes
+        if: steps.changes.outputs.infra == 'true'
+        run: |
+          kubectl apply -f citizen-dashboard-infra/namespace.yaml
+
+## KAFKA -----------------------------
+      - name: Deploy to Kubernetes
+        if: steps.changes.outputs.kafka == 'true'
+        run: |
+          kubectl apply -f citizen-dashboard-infra/kafka/zookeeper.yaml
+          kubectl apply -f citizen-dashboard-infra/kafka/kafka.yaml
+
+
+
