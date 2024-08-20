@@ -24,5 +24,5 @@ class KafkaProducer:
             logger.info(f"Message delivered to {msg.topic()} [{msg.partition()}]")
     
     def fire(self, topic, message):
-        self.producer.produce(topic, value=message, callback=self.delivery_report)
+        self.producer.produce(topic, value=message, on_delivery=self.delivery_report)
         self.producer.flush()
