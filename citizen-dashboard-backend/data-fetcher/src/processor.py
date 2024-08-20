@@ -6,6 +6,7 @@ import requests
 import time
 import json
 from bs4 import BeautifulSoup
+from infra.producer import KafkaProducer
 # import pyarrow.parquet as pq
 # import pyarrow as pa
 
@@ -92,33 +93,11 @@ def process_items(items, base_url, items_info_path, min_wait, max_wait, common_c
             if column in hybrid_record:
                 hybrid_record[column] = json.dumps(hybrid_record[column])
 
-    # def append_to_parquet(df, file_path):
-    #     """Append DataFrame to a Parquet file."""
-    #     ensure_directory_exists(file_path)
-    #     if os.path.exists(file_path):
-    #         existing_df = pd.read_parquet(file_path)
-    #         combined_df = pd.concat([existing_df, df], ignore_index=True)
-    #         table = pa.Table.from_pandas(combined_df)
-    #         pq.write_table(table, file_path)
-    #     else:
-    #         table = pa.Table.from_pandas(df)
-    #         pq.write_table(table, file_path)
-    #         logging.info(f"Created new Parquet file: {file_path}")
-
-    # def ensure_directory_exists(file_path):
-    #     """Ensure the directory for the file path exists."""
-    #     directory = os.path.dirname(file_path)
-    #     if not os.path.exists(directory):
-    #         os.makedirs(directory)
-    #         logging.info(f"Created directory: {directory}")
-
+    producer = KafkaProducer()
     for item in items:
         url = f"{base_url}{item}"
         content = fetch_url_content(url, min_wait, max_wait)
         if content:
             titles_and_content = parse_html(content)
             hybrid_records = transform_records(titles_and_content, item, common_columns)
-            logging.info(f"Can dispatch {len(hybrid_records)} records")
-            # if hybrid_records:
-            #     df_new_records = pd.DataFrame(hybrid_records)
-            #     append_to_parquet(df_new_records, items_info_path)
+            producer.fire("scraper-records", json.dumps(hybrid_records[0]))
