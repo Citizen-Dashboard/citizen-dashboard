@@ -49,18 +49,27 @@ jobs:
             tags: |
               korabel/cd-data-fetcher:latest
               korabel/cd-data-fetcher:${{ github.sha }}
-        
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
+       
+      - name: Set up Kubernetes context
+        uses: azure/k8s-set-context@v3
         with:
-            version: 'v1.30.3'
-        id: install
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_CONFIG }}
       
-      - name: Deploy to k8s
-        uses: actions-hub/kubectl@master
-        env:
-          KUBE_CONFIG: ${{ secrets.K8S_CONFIG }}
-        with:
-          args: get pods
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f deployment/deployment.yaml
+          kubectl apply -f deployment/service.yaml
 
+      # - name: Install kubectl
+      #   uses: azure/setup-kubectl@v4
+      #   with:
+      #       version: 'v1.30.3'
+      #   id: install
       
+      # - name: Deploy to k8s
+      #   uses: actions-hub/kubectl@master
+      #   env:
+      #     KUBE_CONFIG: ${{ secrets.K8S_CONFIG }}
+      #   with:
+      #     args: get pods
