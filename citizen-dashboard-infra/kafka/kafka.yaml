@@ -43,4 +43,4 @@ spec:
         imagePullPolicy: IfNotPresent
         name: kafka-broker
         ports:
-        - containerPort: 9092
+        - containerPort: 9092
