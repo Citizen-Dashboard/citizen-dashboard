@@ -24,19 +24,13 @@ jobs:
         with:
           filters: |
             data-fetcher:
-              - 'citizen-dashboard-backend/data-fetcher/**'
+              - 'services/data-fetcher/**'
             data-store:
-              - 'citizen-dashboard-backend/data-store/**'  
-            backend:
-              - 'citizen-dashboard-backend/backend/**'
-            db:
-              - 'citizen-dashboard-backend/db/**'
-            scripts:
-              - 'citizen-dashboard-backend/scripts/**'
+              - 'services/data-store/**'  
             infra:
-              - 'citizen-dashboard-infra/**'
+              - 'services/**'
             kafka:
-              - 'citizen-dashboard-infra/kafka/**'
+              - 'services/kafka/**'
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -55,8 +49,8 @@ jobs:
         if: steps.changes.outputs.data-fetcher == 'true'
         uses: docker/build-push-action@v3
         with:
-            context: citizen-dashboard-backend/data-fetcher/.
-            file: citizen-dashboard-backend/data-fetcher/Dockerfile
+            context: services/data-fetcher/.
+            file: services/data-fetcher/Dockerfile
             push: true
             tags: |
               korabel/cd-data-fetcher:latest
@@ -65,17 +59,17 @@ jobs:
       - name: Deploy service to K8S (data-fetcher)
         if: steps.changes.outputs.data-fetcher == 'true'
         run: |
-          kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/deployment.yaml
+          kubectl apply -f services/data-fetcher/deployment/deployment.yaml
           kubectl rollout restart deployment data-fetcher -n default
-          kubectl apply -f citizen-dashboard-backend/data-fetcher/deployment/service.yaml
+          kubectl apply -f services/data-fetcher/deployment/service.yaml
 
 ## DATA STORE -----------------------------
       - name: Build and push Docker image (data-store)
         if: steps.changes.outputs.data-store == 'true'
         uses: docker/build-push-action@v3
         with:
-            context: citizen-dashboard-backend/data-store/.
-            file: citizen-dashboard-backend/data-store/Dockerfile
+            context: services/data-store/.
+            file: services/data-store/Dockerfile
             push: true
             tags: |
               korabel/cd-data-store:latest
@@ -84,20 +78,14 @@ jobs:
       - name: Deploy service to K8S (data-store)
         if: steps.changes.outputs.data-store == 'true'
         run: |
-          kubectl apply -f citizen-dashboard-backend/data-store/deployment/deployment.yaml
+          kubectl apply -f services/data-store/deployment/deployment.yaml
           kubectl rollout restart deployment data-store -n default
-          kubectl apply -f citizen-dashboard-backend/data-store/deployment/service.yaml
-
-## INFRA -----------------------------
-      - name: Configure Infra namespace in K8S
-        if: steps.changes.outputs.infra == 'true'
-        run: |
-          kubectl apply -f citizen-dashboard-infra/namespace.yaml
+          kubectl apply -f services/data-store/deployment/service.yaml
 
 ## KAFKA -----------------------------
       - name: Deploy service to K8S (kafka)
         if: steps.changes.outputs.kafka == 'true'
         run: |
-          kubectl apply -f citizen-dashboard-infra/kafka/zookeeper.yaml
-          kubectl apply -f citizen-dashboard-infra/kafka/kafka.yaml
+          kubectl apply -f services/kafka/zookeeper.yaml
+          kubectl apply -f services/kafka/kafka.yaml
 
