@@ -3,10 +3,10 @@ name: Citizen Dashboard main Github Actions
 on:
   push:
     branches:
-    - deployment
+    - korabel/cloud_db
   pull_request:
     branches:
-    - deployment
+    - korabel/cloud_db
 
 jobs:
   build-application:
@@ -27,8 +27,8 @@ jobs:
               - 'services/data-fetcher/**'
             data-store:
               - 'services/data-store/**'  
-            infra:
-              - 'services/**'
+            postgres:
+              - 'services/postgres/**'
             kafka:
               - 'services/kafka/**'
 
@@ -89,3 +89,28 @@ jobs:
           kubectl apply -f services/kafka/deployment/zookeeper.yaml
           kubectl apply -f services/kafka/deployment/kafka.yaml
 
+
+## POSTGRES -----------------------------
+      - name: Update postgres configMap valiues
+        if: steps.changes.outputs.postgres == 'true'
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'services/postgres/deployment/psql-configmap.yaml'
+          commitChange: false
+          changes: |
+            {
+              "data.POSTGRES_DB": "${{ secrets.POSTGRES_DB }}",
+              "data.POSTGRES_USER": "${{ secrets.POSTGRES_USER }}",
+              "data.POSTGRES_PASSWORD": "${{ secrets.POSTGRES_PASSWORD }}"
+            }
+
+      - name: Deploy service to K8S (postgres)
+        if: steps.changes.outputs.postgres == 'true'
+        run: |
+          kubectl apply -f services/postgres/deployment/psql-configmap.yaml
+          kubectl apply -f services/postgres/deployment/psql-pv.yaml
+          kubectl apply -f services/postgres/deployment/psql-claim.yaml
+          kubectl apply -f services/postgres/deployment/psql-main.yaml
+          kubectl apply -f services/postgres/deployment/psql-service.yaml
+
+      
