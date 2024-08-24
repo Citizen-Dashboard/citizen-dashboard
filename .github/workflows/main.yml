@@ -112,5 +112,5 @@ jobs:
           kubectl apply -f services/postgres/deployment/psql-claim.yaml
           kubectl apply -f services/postgres/deployment/psql-main.yaml
           kubectl apply -f services/postgres/deployment/psql-service.yaml
-
-      
+          kubectl apply -f services/postgres/deployment/pgadmin-main.yaml
+          kubectl apply -f services/postgres/deployment/pgadmin-service.yaml
