@@ -8,6 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 confluent-kafka = "^2.5.0"
+sqlalchemy = "^2.0.32"
+psycopg2-binary = "^2.9.9"
 
 
 [build-system]
