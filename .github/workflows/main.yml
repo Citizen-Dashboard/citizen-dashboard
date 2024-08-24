@@ -22,7 +22,10 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: changes
         with:
+          base: ${{ github.ref }}
           filters: |
+            build-script:
+              - '.github/**'
             data-fetcher:
               - 'services/data-fetcher/**'
             data-store:
@@ -46,7 +49,7 @@ jobs:
 
 ## DATA FETCHER -----------------------------
       - name: Build and push Docker image (data-fetcher)
-        if: steps.changes.outputs.data-fetcher == 'true'
+        if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
         uses: docker/build-push-action@v3
         with:
             context: services/data-fetcher/.
@@ -57,7 +60,7 @@ jobs:
               korabel/cd-data-fetcher:${{ github.sha }}
       
       - name: Deploy service to K8S (data-fetcher)
-        if: steps.changes.outputs.data-fetcher == 'true'
+        if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
           kubectl apply -f services/data-fetcher/deployment/deployment.yaml
           kubectl rollout restart deployment data-fetcher -n default
@@ -65,7 +68,7 @@ jobs:
 
 ## DATA STORE -----------------------------
       - name: Build and push Docker image (data-store)
-        if: steps.changes.outputs.data-store == 'true'
+        if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
         uses: docker/build-push-action@v3
         with:
             context: services/data-store/.
@@ -74,17 +77,23 @@ jobs:
             tags: |
               korabel/cd-data-store:latest
               korabel/cd-data-store:${{ github.sha }}
-
+  
       - name: Deploy service to K8S (data-store)
-        if: steps.changes.outputs.data-store == 'true'
+        if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
           kubectl apply -f services/data-store/deployment/deployment.yaml
           kubectl rollout restart deployment data-store -n default
           kubectl apply -f services/data-store/deployment/service.yaml
 
+          kubectl set env deployment/data-store DB_NAME=${{ secrets.POSTGRES_DB }} -n citizen-dashboard
+          kubectl set env deployment/data-store DB_USER=${{ secrets.POSTGRES_USER }} -n citizen-dashboard
+          kubectl set env deployment/data-store DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -n citizen-dashboard
+          kubectl set env deployment/data-store DB_HOST=postgres -n citizen-dashboard
+          kubectl set env deployment/data-store DB_PORT=5432 -n citizen-dashboard
+
 ## KAFKA -----------------------------
       - name: Deploy service to K8S (kafka)
-        if: steps.changes.outputs.kafka == 'true'
+        if: steps.changes.outputs.kafka == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
           kubectl apply -f services/kafka/deployment/zookeeper.yaml
           kubectl apply -f services/kafka/deployment/kafka.yaml
@@ -92,7 +101,7 @@ jobs:
 
 ## POSTGRES -----------------------------
       - name: Update postgres configMap values
-        if: steps.changes.outputs.postgres == 'true'
+        if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: 'services/postgres/deployment/psql-configmap.yaml'
@@ -105,7 +114,7 @@ jobs:
             }
 
       - name: Deploy service to K8S (postgres)
-        if: steps.changes.outputs.postgres == 'true'
+        if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
           kubectl apply -f services/postgres/deployment/psql-configmap.yaml
           kubectl apply -f services/postgres/deployment/psql-pv.yaml
@@ -114,3 +123,4 @@ jobs:
           kubectl apply -f services/postgres/deployment/psql-service.yaml
           kubectl apply -f services/postgres/deployment/pgadmin-main.yaml
           kubectl apply -f services/postgres/deployment/pgadmin-service.yaml
+

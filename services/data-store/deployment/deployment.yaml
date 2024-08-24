@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: data-store
-        image: korabel/cd-data-store:latest
+        image: korabel/cd-data-store:latest        
         ports:
         - containerPort: 80
