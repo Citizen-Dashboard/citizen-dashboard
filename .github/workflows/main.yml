@@ -91,7 +91,7 @@ jobs:
 
 
 ## POSTGRES -----------------------------
-      - name: Update postgres configMap valiues
+      - name: Update postgres configMap values
         if: steps.changes.outputs.postgres == 'true'
         uses: fjogeleit/yaml-update-action@main
         with:
