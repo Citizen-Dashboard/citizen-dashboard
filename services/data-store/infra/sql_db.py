@@ -6,9 +6,11 @@ import logging
 from sqlalchemy import create_engine, text, Column, Integer, String, Sequence
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 Base = declarative_base()
 
@@ -38,6 +40,10 @@ class SqlDB:
 
         self._connect_to_db()
 
+        if os.getenv('CLEAN_DB'):
+            AgendaItem.__table__.drop()
+
+        self._create_db_if_needed()
         self._create_tables_if_needed()
 
         Session = sessionmaker(bind=self.engine)
@@ -46,8 +52,15 @@ class SqlDB:
     def _connect_to_db(self):
         self.engine = create_engine(f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}')
 
+    def _create_db_if_needed(self):
+        if not database_exists(self.engine.url):
+            logger.info(f"Database {self.engine.url} does not exist. Creating...")
+            create_database(self.engine.url)
+        else:
+            logger.info(f"Found database {self.engine.url}. Moving on")
+
     def _create_tables_if_needed(self):
-        Base.metadata.create_all(self.engine)
+        AgendaItem.metadata.create_all(self.engine)
 
     def add_record(self, data):
         new_item = AgendaItem(meeting_id=data.get('meeting_id'),
