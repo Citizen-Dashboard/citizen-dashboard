@@ -1,0 +1,48 @@
+name: Reset cloud environment
+on:
+  workflow_dispatch:
+    branches: 
+      - prototype
+      - korabel/cloud_db
+
+jobs:
+  build-application:
+    name: Reset cloud environment
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    
+    steps:
+        - uses: actions/checkout@v2 
+      
+        - name: Set up Kubernetes context
+          uses: azure/k8s-set-context@v3
+          with:
+            method: kubeconfig
+            kubeconfig: ${{ secrets.K8S_CONFIG }}
+        
+        - name: Terminate relevant services
+          run: |
+            kubectl scale --replicas=0 deployment/data-fetcher -n citizen-dashboard
+            kubectl wait --for=delete pod/data-fetcher --timeout=60s -n citizen-dashboard
+            kubectl scale --replicas=0 deployment/data-store -n citizen-dashboard
+            kubectl wait --for=delete pod/data-store --timeout=60s -n citizen-dashboard
+
+        - name: Reset kafka
+          run: |
+            kubectl rollout restart deployment kafka-broker -n citizen-dashboard
+        
+        - name: Clean Postgres tables
+          run: |
+            kubectl scale --replicas=0 deployment/postgres -n citizen-dashboard
+            kubectl set env deployment/data-store CLEAN_DB=True -n citizen-dashboard
+            kubectl scale --replicas=1 deployment/postgres -n citizen-dashboard
+            kubectl wait pod postgres --for=condition=Ready -n citizen-dashboard
+        
+        - name: Spawn relevant services
+          run: |
+            kubectl scale --replicas=1 deployment/data-store -n citizen-dashboard
+            kubectl wait pod data-store --for=condition=Ready -n citizen-dashboard
+            kubectl set env deployment/data-store CLEAN_DB- -n citizen-dashboard
+            kubectl scale --replicas=1 deployment/data-fetcher -n citizen-dashboard
