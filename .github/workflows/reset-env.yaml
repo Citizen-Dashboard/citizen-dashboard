@@ -37,7 +37,7 @@ jobs:
           run: |
             kubectl scale --replicas=0 deployment/postgres -n citizen-dashboard
             kubectl set env deployment/data-store CLEAN_DB=True -n citizen-dashboard
-            kubectl scale --replicas=1 deployment/postgres -n citizen-dashboard
+            kubectl scale --replicas=2 deployment/postgres -n citizen-dashboard
             kubectl wait pod postgres --for=condition=Ready -n citizen-dashboard
         
         - name: Spawn relevant services

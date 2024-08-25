@@ -3,7 +3,7 @@ import os
 import re
 import logging
 
-from sqlalchemy import create_engine, text, Column, Integer, String, Sequence
+from sqlalchemy import create_engine, Column, Integer, String, Text, Sequence
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
@@ -19,16 +19,16 @@ class AgendaItem(Base):
 
     id = Column(Integer, Sequence('user_id_seq'), primary_key=True) 
     meeting_id = Column(String(50))
-    vote = Column(String(10000), nullable=True)
-    motions = Column(String(10000), nullable=True)
-    background_info = Column(String(10000), nullable=True)
-    decision = Column(String(10000), nullable=True)
-    rulings = Column(String(10000), nullable=True)
-    communications = Column(String(10000), nullable=True)
-    speakers = Column(String(10000), nullable=True)
-    origin = Column(String(10000), nullable=True)
-    summary = Column(String(10000), nullable=True)
-    recommendations = Column(String(10000), nullable=True)
+    vote = Column(Text, nullable=True)
+    motions = Column(Text, nullable=True)
+    background_info = Column(Text, nullable=True)
+    decision = Column(Text, nullable=True)
+    rulings = Column(Text, nullable=True)
+    communications = Column(Text, nullable=True)
+    speakers = Column(Text, nullable=True)
+    origin = Column(Text, nullable=True)
+    summary = Column(Text, nullable=True)
+    recommendations = Column(Text, nullable=True)
 
 class SqlDB:
     def __init__(self) -> None:
@@ -50,7 +50,10 @@ class SqlDB:
         self.session = Session()
 
     def _connect_to_db(self):
-        self.engine = create_engine(f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}')
+        try:
+            self.engine = create_engine(f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}')
+        except Exception as ex:
+            logger.error(ex)         
 
     def _create_db_if_needed(self):
         if not database_exists(self.engine.url):
