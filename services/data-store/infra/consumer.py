@@ -26,13 +26,13 @@ class KafkaConsumer:
                 if msg is None:
                     continue
 
+                logger.info(f"Consuming message: broker={KAFKA_CONF['bootstrap.servers']} group_id={KAFKA_CONF['group.id']} partition {msg.partition()} offset={msg.offset()}")
                 if msg.error():
                     if msg.error().code() == KafkaError._PARTITION_EOF:
                         logger.error(f"Reached end of partition {msg.partition()} at offset {msg.offset()}")
                     else:
                         logger.error(f"Error: {msg.error()}")
                 else:
-                    logger.info(f"Received message: {msg.value().decode('utf-8')} from partition {msg.partition()} at offset {msg.offset()}")
                     self.callback(msg.value().decode('utf-8'))
         finally:
             self.consumer.close()

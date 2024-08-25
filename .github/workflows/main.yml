@@ -3,10 +3,10 @@ name: Citizen Dashboard main Github Actions
 on:
   push:
     branches:
-    - korabel/cloud_db
+    - korabel/search_api
   pull_request:
     branches:
-    - korabel/cloud_db
+    - korabel/search_api
 
 jobs:
   build-application:
