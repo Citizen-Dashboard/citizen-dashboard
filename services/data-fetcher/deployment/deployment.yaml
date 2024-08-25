@@ -4,7 +4,7 @@ metadata:
   name: data-fetcher
   namespace: citizen-dashboard
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: data-fetcher

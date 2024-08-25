@@ -3,9 +3,6 @@ from src.fetcher import fetch_data
 from src.processor import process_items
 
 
-MIN_WAIT = 3
-MAX_WAIT = 5
-
 VOTING_RECORD_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
 MEETING_API_BASE_URL = "https://secure.toronto.ca/council/agenda-item.do?item="
 
@@ -35,7 +32,7 @@ def main():
         items = combined_df['Agenda Item #'].astype(str).unique()
 
         logger.info("Starting the hybrid processing")
-        process_items(items, MEETING_API_BASE_URL, ITEM_DATA_PATH, MIN_WAIT, MAX_WAIT, COMMON_COLUMNS)
+        process_items(items, MEETING_API_BASE_URL, ITEM_DATA_PATH, COMMON_COLUMNS)
         logger.info("Hybrid processing completed")
     else:
         logger.warning("No data to process. Exiting.")

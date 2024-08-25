@@ -63,7 +63,7 @@ jobs:
         if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
           kubectl apply -f services/data-fetcher/deployment/deployment.yaml
-          kubectl rollout restart deployment data-fetcher -n default
+          kubectl rollout restart deployment data-fetcher -n citizen-dashboard
           kubectl apply -f services/data-fetcher/deployment/service.yaml
 
 ## DATA STORE -----------------------------
@@ -82,7 +82,7 @@ jobs:
         if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
           kubectl apply -f services/data-store/deployment/deployment.yaml
-          kubectl rollout restart deployment data-store -n default
+          kubectl rollout restart deployment data-store -n citizen-dashboard
           kubectl apply -f services/data-store/deployment/service.yaml
 
           kubectl set env deployment/data-store DB_NAME=${{ secrets.POSTGRES_DB }} -n citizen-dashboard

@@ -7,22 +7,24 @@ import time
 import json
 from bs4 import BeautifulSoup
 from infra.producer import KafkaProducer
-# import pyarrow.parquet as pq
-# import pyarrow as pa
 
-def process_items(items, base_url, items_info_path, min_wait, max_wait, common_columns):
+
+MIN_WAIT = 3
+MAX_WAIT = 5
+
+def process_items(items, base_url, items_info_path, common_columns):
     """Process each item by scraping and storing data."""
     
-    def get_random_wait(min_wait, max_wait):
+    def get_random_wait():
         """Generate a random wait time between given min and max wait values."""
-        wait_time = random.uniform(min_wait, max_wait)
+        wait_time = random.uniform(MIN_WAIT, MAX_WAIT)
         logging.info(f'Waiting for {wait_time:.2f} seconds before making the next request.')
         return wait_time
 
-    def fetch_url_content(url, min_wait, max_wait):
+    def fetch_url_content(url):
         """Fetch the content of a URL."""
         logging.info(f'Starting to scrape URL: {url}')
-        time.sleep(get_random_wait(min_wait, max_wait))
+        time.sleep(get_random_wait())
         response = requests.get(url)
         if response.status_code == 200:
             logging.info(f'Successfully fetched content from URL: {url}')
@@ -96,7 +98,7 @@ def process_items(items, base_url, items_info_path, min_wait, max_wait, common_c
     producer = KafkaProducer()
     for item in items:
         url = f"{base_url}{item}"
-        content = fetch_url_content(url, min_wait, max_wait)
+        content = fetch_url_content(url)
         if content:
             titles_and_content = parse_html(content)
             hybrid_records = transform_records(titles_and_content, item, common_columns)

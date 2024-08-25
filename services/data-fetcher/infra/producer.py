@@ -11,18 +11,18 @@ KAFKA_CONF = {
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+def delivery_report(err, msg):
+    """ Called once for each message produced to indicate delivery result.
+        Triggered by poll() or flush(). """
+    if err is not None:
+        logger.error(f"Message delivery failed: {err}")
+    else:
+        logger.info(f"Message delivered to {msg.topic()} [{msg.partition()}]")
+
 class KafkaProducer:
     def __init__(self):
         self.producer = Producer(**KAFKA_CONF)
-
-    def delivery_report(err, msg):
-        """ Called once for each message produced to indicate delivery result.
-            Triggered by poll() or flush(). """
-        if err is not None:
-            logger.error(f"Message delivery failed: {err}")
-        else:
-            logger.info(f"Message delivered to {msg.topic()} [{msg.partition()}]")
     
     def fire(self, topic, message):
-        self.producer.produce(topic, value=message, on_delivery=self.delivery_report)
+        self.producer.produce(topic, value=message, on_delivery=delivery_report)
         self.producer.flush()
