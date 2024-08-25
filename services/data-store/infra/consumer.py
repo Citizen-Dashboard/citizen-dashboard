@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 KAFKA_CONF = {
     'bootstrap.servers': 'kafka-broker:9092', 
-    'group.id': f'data-store-{str(random.randint(1000,9999))}',
+    'group.id': f'data-store',
     'auto.offset.reset': 'earliest'
 }
 
