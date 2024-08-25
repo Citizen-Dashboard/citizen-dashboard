@@ -1,6 +1,9 @@
 name: Reset cloud environment
 on:
-    workflow_dispatch:
+  workflow_dispatch:
+    branches: 
+      - prototype
+      - korabel/cloud_db
 
 jobs:
   build-application:
