@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-store
+  namespace: citizen-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-store
+  template:
+    metadata:
+      labels:
+        app: data-store
+    spec:
+      containers:
+      - name: data-store
+        image: korabel/cd-data-store:latest        
+        ports:
+        - containerPort: 80
