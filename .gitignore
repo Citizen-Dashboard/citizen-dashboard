@@ -38,3 +38,7 @@ secrets/*
 ragtest/
 
 *__pycache__*
+
+_deployment.yaml
+_local_secrets
+_psql-configmap.yaml
