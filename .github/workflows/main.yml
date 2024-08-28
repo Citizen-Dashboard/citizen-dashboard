@@ -3,15 +3,20 @@ name: Citizen Dashboard main Github Actions
 on:
   push:
     branches:
-    - korabel/search_api
+    - korabel/local_env
   pull_request:
     branches:
-    - korabel/search_api
+    - korabel/local_env
 
 jobs:
-  build-application:
-    name: Build application and push image to dockerhub
+  build-and-deploy-cd:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER": ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD": ${{ secrets.POSTGRES_PASSWORD }}
     defaults:
       run:
         working-directory: .
@@ -35,11 +40,9 @@ jobs:
             kafka:
               - 'services/kafka/**'
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      - uses: actions/setup-python@v5
         with:
-            username: ${{ secrets.DOCKER_USERNAME }}
-            password: ${{ secrets.DOCKER_PASSWORD }}
+          python-version: '3.12' 
       
       - name: Set up Kubernetes context
         uses: azure/k8s-set-context@v3
@@ -47,80 +50,112 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.K8S_CONFIG }}
 
-## DATA FETCHER -----------------------------
-      - name: Build and push Docker image (data-fetcher)
-        if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
-        uses: docker/build-push-action@v3
-        with:
-            context: services/data-fetcher/.
-            file: services/data-fetcher/Dockerfile
-            push: true
-            tags: |
-              korabel/cd-data-fetcher:latest
-              korabel/cd-data-fetcher:${{ github.sha }}
-      
-      - name: Deploy service to K8S (data-fetcher)
+      - name: Deploy service to K8S (postgres)
+        if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
+        run: |
+          python services/postgres/deployment/deploy.py
+    
+      - name: Deploy service to K8S (kafka)
+        if: steps.changes.outputs.kafka == 'true' || steps.changes.outputs.build-script == 'true'
+        run: |
+          python services/kafka/deployment/deploy.py
+
+      - name: Deploy data-fetcher
         if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
-          kubectl apply -f services/data-fetcher/deployment/deployment.yaml
-          kubectl rollout restart deployment data-fetcher -n citizen-dashboard
-          kubectl apply -f services/data-fetcher/deployment/service.yaml
-
-## DATA STORE -----------------------------
-      - name: Build and push Docker image (data-store)
-        if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
-        uses: docker/build-push-action@v3
-        with:
-            context: services/data-store/.
-            file: services/data-store/Dockerfile
-            push: true
-            tags: |
-              korabel/cd-data-store:latest
-              korabel/cd-data-store:${{ github.sha }}
+          python services/data-fetcher/deployment/deploy.py -t dev-${{ github.actor }}-${{ github.ref_name }}      
   
       - name: Deploy service to K8S (data-store)
         if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
         run: |
-          kubectl apply -f services/data-store/deployment/deployment.yaml
-          kubectl rollout restart deployment data-store -n citizen-dashboard
-          kubectl apply -f services/data-store/deployment/service.yaml
-
-          kubectl set env deployment/data-store DB_NAME=${{ secrets.POSTGRES_DB }} -n citizen-dashboard
-          kubectl set env deployment/data-store DB_USER=${{ secrets.POSTGRES_USER }} -n citizen-dashboard
-          kubectl set env deployment/data-store DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -n citizen-dashboard
-          kubectl set env deployment/data-store DB_HOST=postgres -n citizen-dashboard
-          kubectl set env deployment/data-store DB_PORT=5432 -n citizen-dashboard
-
-## KAFKA -----------------------------
-      - name: Deploy service to K8S (kafka)
-        if: steps.changes.outputs.kafka == 'true' || steps.changes.outputs.build-script == 'true'
-        run: |
-          kubectl apply -f services/kafka/deployment/zookeeper.yaml
-          kubectl apply -f services/kafka/deployment/kafka.yaml
+          python services/data-store/deployment/deploy.py -t dev-${{ github.actor }}-${{ github.ref_name }}
 
 
-## POSTGRES -----------------------------
-      - name: Update postgres configMap values
-        if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: 'services/postgres/deployment/psql-configmap.yaml'
-          commitChange: false
-          changes: |
-            {
-              "data.POSTGRES_DB": "${{ secrets.POSTGRES_DB }}",
-              "data.POSTGRES_USER": "${{ secrets.POSTGRES_USER }}",
-              "data.POSTGRES_PASSWORD": "${{ secrets.POSTGRES_PASSWORD }}"
-            }
 
-      - name: Deploy service to K8S (postgres)
-        if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
-        run: |
-          kubectl apply -f services/postgres/deployment/psql-configmap.yaml
-          kubectl apply -f services/postgres/deployment/psql-pv.yaml
-          kubectl apply -f services/postgres/deployment/psql-claim.yaml
-          kubectl apply -f services/postgres/deployment/psql-main.yaml
-          kubectl apply -f services/postgres/deployment/psql-service.yaml
-          kubectl apply -f services/postgres/deployment/pgadmin-main.yaml
-          kubectl apply -f services/postgres/deployment/pgadmin-service.yaml
+## ----------------- Depricated -----------------
+      # - name: Deploy service to K8S (data-fetcher)
+      #   if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
+      #   run: |
+      #     kubectl apply -f services/data-fetcher/deployment/deployment.yaml
+      #     kubectl rollout restart deployment data-fetcher -n citizen-dashboard
+      #     kubectl apply -f services/data-fetcher/deployment/service.yaml
 
+## DATA STORE -----------------------------
+#       - name: Build and push Docker image (data-store)
+#         if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
+#         uses: docker/build-push-action@v3
+#         with:
+#             context: services/data-store/.
+#             file: services/data-store/Dockerfile
+#             push: true
+#             tags: |
+#               korabel/cd-data-store:latest
+#               korabel/cd-data-store:${{ github.sha }}
+  
+#       - name: Deploy service to K8S (data-store)
+#         if: steps.changes.outputs.data-store == 'true' || steps.changes.outputs.build-script == 'true'
+#         run: |
+#           kubectl apply -f services/data-store/deployment/deployment.yaml
+#           kubectl rollout restart deployment data-store -n citizen-dashboard
+#           kubectl apply -f services/data-store/deployment/service.yaml
+
+#           kubectl set env deployment/data-store DB_NAME=${{ secrets.POSTGRES_DB }} -n citizen-dashboard
+#           kubectl set env deployment/data-store DB_USER=${{ secrets.POSTGRES_USER }} -n citizen-dashboard
+#           kubectl set env deployment/data-store DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -n citizen-dashboard
+#           kubectl set env deployment/data-store DB_HOST=postgres -n citizen-dashboard
+#           kubectl set env deployment/data-store DB_PORT=5432 -n citizen-dashboard
+
+# ## KAFKA -----------------------------
+#       - name: Deploy service to K8S (kafka)
+#         if: steps.changes.outputs.kafka == 'true' || steps.changes.outputs.build-script == 'true'
+#         run: |
+#           kubectl apply -f services/kafka/deployment/zookeeper.yaml
+#           kubectl apply -f services/kafka/deployment/kafka.yaml
+
+
+# ## POSTGRES -----------------------------
+#       - name: Update postgres configMap values
+#         if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
+#         uses: fjogeleit/yaml-update-action@main
+#         with:
+#           valueFile: 'services/postgres/deployment/psql-configmap.yaml'
+#           commitChange: false
+#           changes: |
+#             {
+#               "data.POSTGRES_DB": "${{ secrets.POSTGRES_DB }}",
+#               "data.POSTGRES_USER": "${{ secrets.POSTGRES_USER }}",
+#               "data.POSTGRES_PASSWORD": "${{ secrets.POSTGRES_PASSWORD }}"
+#             }
+
+#       - name: Deploy service to K8S (postgres)
+#         if: steps.changes.outputs.postgres == 'true' || steps.changes.outputs.build-script == 'true'
+#         run: |
+#           kubectl apply -f services/postgres/deployment/psql-configmap.yaml
+#           kubectl apply -f services/postgres/deployment/psql-pv.yaml
+#           kubectl apply -f services/postgres/deployment/psql-claim.yaml
+#           kubectl apply -f services/postgres/deployment/psql-main.yaml
+#           kubectl apply -f services/postgres/deployment/psql-service.yaml
+#           kubectl apply -f services/postgres/deployment/pgadmin-main.yaml
+#           kubectl apply -f services/postgres/deployment/pgadmin-service.yaml
+
+   # - name: Configure python env
+      #   run: |
+      #     pip install --upgrade pip
+      #     pip install poetry
+      #     poetry install
+    
+      # - name: Build and push Docker image
+      #   if: steps.changes.outputs.data-fetcher == 'true' || steps.changes.outputs.build-script == 'true'
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #       context: services/data-fetcher/.
+      #       file: services/data-fetcher/Dockerfile
+      #       push: true
+      #       tags: |
+      #         korabel/cd-data-fetcher:latest
+      #         korabel/cd-data-fetcher:${{ github.sha }}
+ # - name: Log in to Docker Hub
+      #   uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      #   with:
+      #       username: ${{ secrets.DOCKER_USERNAME }}
+      #       password: ${{ secrets.DOCKER_PASSWORD }}

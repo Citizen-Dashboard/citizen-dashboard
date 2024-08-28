@@ -6,7 +6,7 @@ on:
       - korabel/cloud_db
 
 jobs:
-  build-application:
+  reset-environment:
     name: Reset cloud environment
     runs-on: ubuntu-latest
     defaults:

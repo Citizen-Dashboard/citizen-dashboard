@@ -6,6 +6,6 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: ps_db
-  POSTGRES_USER: ps_user
-  POSTGRES_PASSWORD: SecurePassword
+  POSTGRES_DB: _POSTGRES_DB_
+  POSTGRES_USER: _POSTGRES_USER_
+  POSTGRES_PASSWORD: _POSTGRES_PASSWORD_
