@@ -33,7 +33,7 @@ Citizen-Dashboard project supports deployment to a k8s cluster. We currently hav
 > We are all developing on personal laptops, each with different OS type and/or version. As much as we are trying to use tools that are as standard as possible, discrepancies can and will pop up. If you enounter a problem please share.
 
 ### Prerequisites
-1. **Python** - the build procedures that run locally do not require fancy new python versions - let's agree on '>3.9' :smile:
+1. **Python** - local deploy procedures do not require fancy new python versions - let's agree on '>3.9' :smile:
 2. **Docker** - docker deamon should be installed and running on your machine
 3. **[kubectl](https://kubernetes.io/docs/reference/kubectl/)** - any of the latest versions will do
 4. **[minikube](https://minikube.sigs.k8s.io/docs/)** - please lookup any guide on the web, there are a lot. If you are a mac (Apple silicon) user you can follow [this](https://devopscube.com/minikube-mac/) one
