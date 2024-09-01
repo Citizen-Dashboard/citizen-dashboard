@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-secret
+  name: postgres-config
   namespace: citizen-dashboard
   labels:
     app: postgres
@@ -9,3 +9,4 @@ data:
   POSTGRES_DB: _POSTGRES_DB_
   POSTGRES_USER: _POSTGRES_USER_
   POSTGRES_PASSWORD: _POSTGRES_PASSWORD_
+  POSTGRES_HOST_AUTH_METHOD: trust

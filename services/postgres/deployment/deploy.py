@@ -34,13 +34,15 @@ def procedure(local):
     execute("sed -i {} 's/_POSTGRES_PASSWORD_/{}/g' services/{}/deployment/_psql-configmap.yaml".
             format("" if isGNU() else "''", os.environ.get('POSTGRES_PASSWORD'), SERVICE))
     
-    execute(f"kubectl apply -f services/{SERVICE}/deployment/psql-configmap.yaml")
+    execute(f"kubectl apply -f services/{SERVICE}/deployment/_psql-configmap.yaml")
     execute(f"kubectl apply -f services/{SERVICE}/deployment/psql-pv.yaml")
     execute(f"kubectl apply -f services/{SERVICE}/deployment/psql-claim.yaml")
     execute(f"kubectl apply -f services/{SERVICE}/deployment/psql-main.yaml")
     execute(f"kubectl apply -f services/{SERVICE}/deployment/psql-service.yaml")
     execute(f"kubectl apply -f services/{SERVICE}/deployment/pgadmin-main.yaml")
     execute(f"kubectl apply -f services/{SERVICE}/deployment/pgadmin-service.yaml")
+
+    execute(f"kubectl rollout restart deployment {SERVICE} -n citizen-dashboard")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Citizen Dashboard Deployer',
