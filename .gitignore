@@ -42,3 +42,6 @@ ragtest/
 _deployment.yaml
 _local_secrets
 _psql-configmap.yaml
+
+#venv
+.venv/

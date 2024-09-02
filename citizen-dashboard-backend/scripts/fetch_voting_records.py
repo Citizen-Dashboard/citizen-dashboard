@@ -6,6 +6,8 @@ import pandas as pd
 import io
 
 logger = logging.getLogger(__name__)
+VOTING_RECORD_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
+PACKAGE_ID = "members-of-toronto-city-council-voting-record"
 
 def fetch_voting_records(base_url, package_id):
     logger.info("Fetching package metadata...")
@@ -44,3 +46,6 @@ def fetch_voting_records(base_url, package_id):
     else:
         logger.warning("No datastore active resources found")
         return None
+    
+if __name__ == '__main__':
+    fetch_voting_records(VOTING_RECORD_URL, PACKAGE_ID)

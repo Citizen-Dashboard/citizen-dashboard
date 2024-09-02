@@ -1,7 +1,7 @@
 import logging
 from src.fetcher import fetch_data
 from src.processor import process_items
-
+import time
 
 VOTING_RECORD_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca"
 MEETING_API_BASE_URL = "https://secure.toronto.ca/council/agenda-item.do?item="
@@ -38,4 +38,5 @@ def main():
         logger.warning("No data to process. Exiting.")
 
 if __name__ == "__main__":
+    # time.sleep(1000)
     main()

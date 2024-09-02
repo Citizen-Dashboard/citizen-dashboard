@@ -58,6 +58,3 @@ Now we can move on to actually deploying the project
 
 > [!NOTE] 
 > When running this deployment for the first time on your machine, it could take a while as it builds our service images for the first time. The next time you run it should be quicker as some of the image layers are already cached locally
-
-
-

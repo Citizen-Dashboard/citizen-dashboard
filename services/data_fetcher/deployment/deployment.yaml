@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: data-fetcher
-        image: _IMAGENAME_
+        image: korabel/cd-data-fetcher:local
         ports:
         - containerPort: 80
