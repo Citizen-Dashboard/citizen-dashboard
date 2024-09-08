@@ -1,5 +1,6 @@
 import os
 import logging
+import subprocess
 from docker import from_env as docker_from_env
 from kubernetes import client, config
 import datetime
@@ -9,12 +10,13 @@ logger = logging.getLogger(__name__)
 
 def execute(cmd):
     """Execute a shell command and handle errors."""
-    resp = os.system(cmd)
-    if resp != 0:
-        logger.error(f"Failed to execute command (exit code {resp}): \"{cmd}\". Aborting")
+    try:
+        subprocess.check_call(cmd, shell=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to execute command (exit code {e.returncode}): \"{cmd}\". Aborting")
         exit(1)
 
-def configure_context(local):
+def configure_context(local: bool):
     """Configure the Kubernetes context based on local or cloud deployment."""
     if local:
         execute(f"kubectl config use-context minikube")
@@ -44,7 +46,7 @@ def build_and_tag_image(service, tag):
     service_dir = service.replace("-", "_")
     docker_client = docker_from_env()
     logger.info(f"Building service {service} container")
-    image, build_logs = docker_client.images.build(path=f'services/{service_dir}/.', tag=f'korabel/cd-{service}:{tag}')
+    image, build_logs = docker_client.images.build(path=os.path.join('services', service_dir), tag=f'korabel/cd-{service}:{tag}')
     for chunk in build_logs:
         if 'stream' in chunk:
             logger.info(chunk['stream'].strip())
@@ -58,7 +60,8 @@ def load_image_to_minikube(service, tag):
 def update_deployment_manifest(service, tag):
     service_dir = service.replace("-", "_")
     """Update the deployment manifest with the correct image name."""
-    replace_in_file(f'services/{service_dir}/deployment/deployment.yaml', {
+    file_path = os.path.join('services', service_dir, 'deployment', 'deployment.yaml')
+    replace_in_file(file_path, {
         '_IMAGENAME_': f'korabel/cd-{service}:{tag}'
     })
 
@@ -70,7 +73,8 @@ def deploy_to_kubernetes(service: str, local: bool):
     service_dir = service.replace("-", "_")
     
     # Use PyYAML to load the deployment manifest
-    with open(f'services/{service_dir}/deployment/_deployment.yaml', 'r') as file:
+    file_path = os.path.join('services', service_dir, 'deployment', '_deployment.yaml')
+    with open(file_path, 'r') as file:
         deployment_manifest = yaml.safe_load(file)
     
     logger.info(f"Deploying service {service} to {'minikube' if local else 'cloud k8s cluster'}")
@@ -82,4 +86,3 @@ def deploy_to_kubernetes(service: str, local: bool):
         namespace="citizen-dashboard", 
         body={"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": str(datetime.datetime.now())}}}}}
     )
-

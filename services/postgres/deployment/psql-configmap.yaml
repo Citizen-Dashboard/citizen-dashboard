@@ -6,6 +6,6 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: _POSTGRES_DB_
-  POSTGRES_USER: _POSTGRES_USER_
-  POSTGRES_PASSWORD: _POSTGRES_PASSWORD_
+  POSTGRES_DB: citizen-dashboard
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: cd1234wowee
