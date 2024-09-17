@@ -1,0 +1,6 @@
+elasticLocalAPIEndpoint="https://127.0.0.1:9200"
+NEXT_PUBLIC_elasticSearchServer="http://127.0.0.1:3001"
+elasticLocalUserName="elastic"
+elasticLocalPassword="<your_local_elastic_instance_password>"
+elasticClient="local"
+elasticIndex="city_dash_demo"
