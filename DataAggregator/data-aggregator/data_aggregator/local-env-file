@@ -1,0 +1,19 @@
+Kafka_REST_Port=<kafka_REST_port_from_kafka_console>
+Plaintext_Ports=<kafka_plaintext_port_from_kafka_console>
+kafka_agendaItem_topic="index_agenda_item"
+kafka_agendaItem_group="index_agenda_item_group"
+
+
+# Log levels
+# 'CRITICAL'
+# 'ERROR'
+# 'WARNING'
+# 'INFO'
+# 'DEBUG'
+# 'NOTSET'
+log_level="DEBUG"
+
+# Fetch agenda items from past nth day
+Fetch_from_Past_nth_day=10
+# Fetch agenda items to past nth day
+Fetch_to_Past_nth_day=2
