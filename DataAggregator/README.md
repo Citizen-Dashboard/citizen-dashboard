@@ -1,4 +1,15 @@
-This project is a data aggregator for the City of Toronto's Agenda Items. It is a Python application that fetches data from the City's public website, processes the data, and pushes to a kafka topic for consumption by other applications.
+This project is a data aggregator for the City of Toronto's Agenda Items. It is a Python application that fetches data from the City's public website, processes the data, and pushes to a kafka topic for consumption by other applications. 
+
+Everytime the aggregator is run, it pulls agenda-items from past `nth` to `mth` day window, pushes them to a kafka topic and exists.
+In production, a scheduler can be configured to run the aggregator periodically.
+
+The number of days data to pull is configured by the environment variables:
+    ```bash
+    # Fetch agenda items from past nth day
+    Fetch_from_Past_nth_day=10
+    # Fetch agenda items to past nth day
+    Fetch_to_Past_nth_day=2
+    ```
 
 ## Getting Started
 

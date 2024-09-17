@@ -8,12 +8,14 @@ Both should be run in separate terminals/containers.
 
 **The Indexer server** is a continous running process that subscribe for messages published to the Kafka topic name defined in the environment variable `kafka_agendaItem_topic`. It  consumes agenda items from Kafka and indexes them in Elasticsearch. In Production, the Indexer server can be run in a cluster. 
 
-> Note: The Indexer server will exit if the Kafka topic does not exist. Ensure that the DataAggregator service is run before starting the consumer server.
+> Note: The Indexer server will exit if the Kafka topic does not exist. Ensure that the DataAggregator service is run before starting the indexer server.
 
 
 **The search server** provides a REST API and a NextJS frontend to search for agenda items in Elasticsearch. In Production, multiple instances of the search server can be run behind a load balancer for scalability.
 
-**The NextJS frontend** is a simple web app that allows you to search for agenda items and view the results. It is built with NextJS and TypeScript. NextJS supports running the frontend and backend servers in a single container, but for simplicity, we have separated the serverside functionalities in this project. However,  the `services` folder contains an example of how the frontend and backend servers can be combined into a single container.
+**The NextJS frontend** is a simple web app that allows you to search for agenda items and view the results. It is built with NextJS and TypeScript. 
+
+> NextJS supports running the frontend and backend servers in a single container, but for simplicity, we are using only the client side in this project (similar to a react project). However, we have included instructions and example for building server side component in the `ElasticSearch-Client\readme.md` file.
 
 
 ## Setup Instructions
@@ -24,7 +26,7 @@ Use the file named `local-env-file` for reference. The passwords can be anything
 
 
 ### 1. Start Kafka Container
-Follow instructions in the DataAggregator project's README.md to start the kafka container. Update the kafa container `REST_PORT` and `plainText_PORT` in the '.env' file.
+Follow instructions in the DataAggregator project's README.md to start the kafka container. Copy the kafa container `REST_PORT` and `plainText_PORT` from the console, and update the '.env' file.
 
 ### 2. Run data aggregator
 Follow instructions in the DataAggregator project's README.md to run the data aggregator. This ensures that agenda items are produced to the Kafka topic.
