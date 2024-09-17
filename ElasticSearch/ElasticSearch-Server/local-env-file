@@ -1,0 +1,28 @@
+# Configureations to connect to the Elastic Cloud
+elasticCloudAPIEndpoint="<Your elastic cloud API endpoint>"
+elasticSearchApiKey="<Your elastic search api key>"
+elasticCloudID="<Your elastic cloud api key>"
+elasticCloudUserName="<Your elastic cloud User Name>"
+elasticCloudPassword="<Youre Elastic cloud password>"
+
+# Configureations to connect to the local Elasticsearch instance
+elasticLocalAPIEndpoint="https://127.0.0.1:9200"
+elasticLocalUserName="elastic"
+elasticLocalPassword="<Your_elastic_local_password>"
+elasticClient="local"
+
+# The name of the Elasticsearch index to use
+elasticIndex="city_dash_demo"
+
+# Kafka configurations
+Kafka_Host="localhost"
+Kafka_REST_Port=<Kafka_REST_port_from_kakfa_console>
+Plaintext_Ports=<Kafka_plaintext_port_from_kakfa_console>
+
+# Kafka topics and groups
+kafka_agendaItem_topic="index_agenda_item"
+kafka_agendaItem_group="index_agenda_item_group"
+
+# Logging configurations
+LOG_LEVEL="info"
+LOG_FILE_FOLDER="./logs"
