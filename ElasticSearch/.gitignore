@@ -110,6 +110,9 @@ dist
 # vuepress build output
 .vuepress/dist
 
+# Next build output
+next_build/
+
 # vuepress v2.x temp and cache directory
 .temp
 .cache
