@@ -87,11 +87,11 @@ Now the search server is running and is ready to serve HTTP requests.
 
 ### 6. Make a search request'
 Starting the **search server** with the `npm run search` command will also serve a nextJS frontend on port 3001. 
-You should be able to access the nextJS web app by navigating to `http://localhost:3001` in your web browser.
+You should be able to access the nextJS web app by navigating to `http://127.0.0.1:3001` in your web browser.
 
 If you just want to use the search server without the frontend, you can send a search request to the search server like this:
 ```bash
-curl --location 'http://localhost:3001/search?query=sign%20employment%20district'
+curl --location 'http://127.0.0.1:3001/search?query=sign%20employment%20district'
 ```
 > The nextJS frontend is served from the `server/next_build` folder. Follow the instructions in the netJS frontend project to build static content and update the `server/next_build` folder.
 
