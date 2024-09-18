@@ -86,4 +86,4 @@ app.use(express.static(nextJsStaticFolder))
 
 
 //start the Node server
-app.listen(port, () => logger.info(`Server listening at http://localhost:${port}`));
+app.listen(port, () => logger.info(`Server listening at http://127.0.0.1:${port}`));
