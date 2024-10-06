@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "ctto-rag-demo"
+version = "0.1.0"
+description = ""
+authors = ["Nithin Sudersan <nithin.sudersan@cuezap.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+bs4 = "^0.0.2"
+langchain = "^0.2.10"
+langchain-openai = "^0.1.17"
+langchain-community = "^0.2.9"
+validators = "^0.33.0"
+langserve = {extras = ["all"], version = "^0.2.2"}
+langchain-milvus = "^0.1.3"
+pymilvus = "^2.4.4"
+markdownify = "^0.13.1"
+
+[tool.poetry.plugins.dotenv]
+location = ".env"
+
+[tool.poetry.scripts]
+populate-db-script = "ctto_rag_demo.data_prep:parse_data"
+start-server-script = "ctto_rag_demo.data_prep:startRAG"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
