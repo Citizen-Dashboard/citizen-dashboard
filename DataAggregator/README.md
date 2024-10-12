@@ -57,7 +57,7 @@ once the kafka cluster is up and running, copy the `Plaintext Ports` printed in 
 To run the application, Navigate to the `/data-aggregator` directory and use the following command:
 
 ```bash
-poetry run python ./data_aggregator/main.py
+poetry run python ./data_aggregator/app.py
 ```
 
 
