@@ -55,6 +55,11 @@ jobs:
       - name: Set Image Tags
         id: set_tags
         run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          COMPONENT=${{ matrix.component }}
+          SHA=${{ github.sha }}
+
           if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
             echo "TAGS=ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:latest ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
           else
