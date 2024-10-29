@@ -75,7 +75,7 @@ jobs:
       - name: Build Docker Image
         uses: docker/build-push-action@v4
         with:
-          context: services/${{ matrix.component }}
+          context: ${{ matrix.component }}
           push: false
           tags: |
             ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
@@ -95,7 +95,7 @@ jobs:
       - name: Push Docker Image
         uses: docker/build-push-action@v4
         with:
-          context: services/${{ matrix.component }}
+          context: ${{ matrix.component }}
           push: true
           tags: ${{ env.TAGS }}
           # Enable build cache to speed up builds
