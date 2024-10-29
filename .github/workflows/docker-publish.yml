@@ -6,11 +6,9 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 permissions:
   contents: write         # Allows read and write access to repository contents
@@ -23,24 +21,11 @@ jobs:
 
     strategy:
       matrix:
-        component: [data_fetcher, data_store]
+        component: [data-fetcher, data-store]
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Ensure full history is fetched for accurate commit SHA
-
-      - name: List Repository Contents (Debugging)
-        run: |
-          echo "Listing repository root:"
-          ls -la
-          echo "Listing services directory:"
-          ls -la services
-          echo "Listing data_store directory:"
-          ls -la services/data_store
-          echo "Listing data_fetcher directory:"
-          ls -la services/data_fetcher
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.7.1
@@ -63,27 +48,32 @@ jobs:
       - name: Set Image Tags
         id: set_tags
         run: |
-          # Convert repository owner to lowercase
+          # Convert repository owner and name to lowercase
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           COMPONENT=${{ matrix.component }}
           SHA=${{ github.sha }}
-          REF=${{ github.ref }}
 
-          # Determine if the event is a push to main/master
-          if [[ "${{ github.event_name }}" == "push" && ( "${REF}" == "refs/heads/main" || "${REF}" == "refs/heads/master" ) ]]; then
-            TAGS="ghcr.io/${OWNER}/${COMPONENT}:latest ghcr.io/${OWNER}/${COMPONENT}:${SHA}"
+          # Export OWNER and REPO to the environment for later use
+          echo "OWNER=${OWNER}" >> $GITHUB_ENV
+          echo "REPO=${REPO}" >> $GITHUB_ENV
+
+          # Conditional tagging based on the event and branch
+          if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
+            echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:latest ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
           else
-            TAGS="ghcr.io/${OWNER}/${COMPONENT}:${SHA}"
+            echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
           fi
-
-          echo "TAGS=${TAGS}" >> $GITHUB_ENV
 
       - name: Build Docker Image
         uses: docker/build-push-action@v4
         with:
           context: services/${{ matrix.component }}
           push: false
-          tags: ${{ env.TAGS }}
+          tags: |
+            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
+            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.sha }}
+          # Enable build cache to speed up builds
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -96,14 +86,15 @@ jobs:
           ignore-unfixed: true
 
       - name: Push Docker Image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6.9.0
         with:
           context: services/${{ matrix.component }}
           push: true
           tags: ${{ env.TAGS }}
+          # Enable build cache to speed up builds
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Verify Image Push
         run: |
-          echo "Successfully pushed images for ${{ matrix.component }} with tags: $TAGS"
+          echo "Successfully pushed images for ${matrix.component} with tags: $TAGS"
