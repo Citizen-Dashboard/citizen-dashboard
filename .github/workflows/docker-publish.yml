@@ -61,9 +61,9 @@ jobs:
           SHA=${{ github.sha }}
 
           if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
-            echo "TAGS=ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:latest ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
+            echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:latest ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
           else
-            echo "TAGS=ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
+            echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
           fi
 
       - name: Build Docker Image
@@ -72,8 +72,8 @@ jobs:
           context: services/${{ matrix.component }}
           push: false
           tags: |
-            ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:latest
-            ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}
+            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
+            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.sha }}
           # Enable build cache to speed up builds
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -81,7 +81,7 @@ jobs:
       - name: Scan Docker Image with Trivy
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:latest
+          image-ref: ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
           format: 'table'
           exit-code: 1
           ignore-unfixed: true
