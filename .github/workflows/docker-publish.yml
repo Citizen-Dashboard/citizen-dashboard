@@ -66,10 +66,10 @@ jobs:
           fi
 
       - name: Build Docker Image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6.9.0
         with:
           context: services/${{ matrix.component }}
-          push: false
+          push: true
           load: true
           tags: |
             ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
@@ -86,15 +86,15 @@ jobs:
       #     exit-code: 1
       #     ignore-unfixed: true
 
-      - name: Push Docker Image
-        uses: docker/build-push-action@v6.9.0
-        with:
-          context: services/${{ matrix.component }}
-          push: true
-          tags: ${{ env.TAGS }}
-          # Enable build cache to speed up builds
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+      # - name: Push Docker Image
+      #   uses: docker/build-push-action@v6.9.0
+      #   with:
+      #     context: services/${{ matrix.component }}
+      #     push: true
+      #     tags: ${{ env.TAGS }}
+      #     # Enable build cache to speed up builds
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Verify Image Push
         run: |
