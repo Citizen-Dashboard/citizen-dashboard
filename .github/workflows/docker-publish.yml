@@ -1,0 +1,95 @@
+# .github/workflows/docker-publish.yml
+
+name: Build, Scan, and Publish Docker Images
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write         # Allows read and write access to repository contents
+  pull-requests: write    # Allows creating and modifying pull requests
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        component: [data_fetcher, data_store]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history is fetched for accurate commit SHA
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN for authentication
+
+      - name: Set Image Tags
+        id: set_tags
+        run: |
+          if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
+            echo "TAGS=ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:latest ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
+          else
+            echo "TAGS=ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: services/${{ matrix.component }}
+          push: false
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:${{ github.sha }}
+          # Enable build cache to speed up builds
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@v0.10.0
+        with:
+          image-ref: ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:latest
+          format: 'table'
+          exit-code: 1
+          ignore-unfixed: true
+
+      - name: Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: services/${{ matrix.component }}
+          push: true
+          tags: ${{ env.TAGS }}
+          # Enable build cache to speed up builds
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Verify Image Push
+        run: |
+          echo "Successfully pushed images for ${matrix.component} with tags: $TAGS"

@@ -1,0 +1,40 @@
+# .github/workflows/auto-create-pr.yml
+
+name: Auto Create Pull Request
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+      - '**/main'
+      - '**/master'
+    # This ensures the workflow runs on pushes to all branches except main and master
+
+permissions:
+  contents: write         # Allows read and write access to repository contents
+  pull-requests: write    # Allows creating and modifying pull requests
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensures full history is fetched
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Correctly reference GITHUB_TOKEN
+          commit-message: "Automated PR: ${{ github.event.head_commit.message }}"
+          branch: ${{ github.ref_name }}
+          title: "Automated PR: ${{ github.ref_name }}"
+          body: |
+            This PR was automatically generated from branch `${{ github.ref_name }}`.
+            
+            Please review the changes and merge if everything looks good.
+          base: main  # Change to 'master' if your main branch is named 'master'
+          draft: true  # Set to true if you want to create draft PRs
