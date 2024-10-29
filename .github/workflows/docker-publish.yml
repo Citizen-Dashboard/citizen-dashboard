@@ -56,9 +56,9 @@ jobs:
         id: set_tags
         run: |
           if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
-            echo "TAGS=ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:latest ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
+            echo "TAGS=ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:latest ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
           else
-            echo "TAGS=ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
+            echo "TAGS=ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}" >> $GITHUB_ENV
           fi
 
       - name: Build Docker Image
@@ -67,8 +67,8 @@ jobs:
           context: services/${{ matrix.component }}
           push: false
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:latest
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.component }}:${{ github.sha }}
+            ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:latest
+            ghcr.io/${{ github.repository_name }}/${{ matrix.component }}:${{ github.sha }}
           # Enable build cache to speed up builds
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
