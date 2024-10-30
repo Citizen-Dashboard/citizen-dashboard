@@ -1,5 +1,3 @@
-# .github/workflows/docker-publish.yml
-
 name: Build, Scan, and Publish Docker Images
 
 on:
@@ -11,8 +9,9 @@ on:
       - main
 
 permissions:
-  contents: write         # Allows read and write access to repository contents
-  pull-requests: write    # Allows creating and modifying pull requests
+  contents: write
+  pull-requests: write
+  packages: write   # Ensure write access to GHCR
 
 jobs:
   build-and-push:
@@ -48,17 +47,14 @@ jobs:
       - name: Set Image Tags
         id: set_tags
         run: |
-          # Convert repository owner and name to lowercase
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           COMPONENT=${{ matrix.component }}
           SHA=${{ github.sha }}
 
-          # Export OWNER and REPO to the environment for later use
           echo "OWNER=${OWNER}" >> $GITHUB_ENV
           echo "REPO=${REPO}" >> $GITHUB_ENV
 
-          # Conditional tagging based on the event and branch
           if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
             echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:latest ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
           else
@@ -73,24 +69,8 @@ jobs:
           load: true
           tags: |
             ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.sha }}
-
-      # - name: Scan Docker Image with Trivy
-      #   uses: aquasecurity/trivy-action@0.28.0
-      #   with:
-      #     image-ref: ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
-      #     format: 'table'
-      #     exit-code: 1
-      #     ignore-unfixed: true
-
-      # - name: Push Docker Image
-      #   uses: docker/build-push-action@v6.9.0
-      #   with:
-      #     context: services/${{ matrix.component }}
-      #     push: true
-      #     tags: ${{ env.TAGS }}
-      #     # Enable build cache to speed up builds
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Verify Image Push
         run: |
