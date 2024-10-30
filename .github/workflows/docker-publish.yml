@@ -73,10 +73,6 @@ jobs:
           load: true
           tags: |
             ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
-            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.sha }}
-          # Enable build cache to speed up builds
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
 
       # - name: Scan Docker Image with Trivy
       #   uses: aquasecurity/trivy-action@0.28.0
