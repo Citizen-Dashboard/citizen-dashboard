@@ -72,7 +72,7 @@ jobs:
           push: true
           load: true
           tags: |
-            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:latest
+            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.sha }}
 
       # - name: Scan Docker Image with Trivy
       #   uses: aquasecurity/trivy-action@0.28.0
