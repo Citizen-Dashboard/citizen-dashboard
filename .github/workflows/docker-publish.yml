@@ -74,4 +74,4 @@ jobs:
 
       - name: Verify Image Push
         run: |
-          echo "Successfully pushed images for ${matrix.component} with tags: $TAGS"
+          echo "Successfully pushed images for ${{ matrix.component }} with tags: $TAGS"
