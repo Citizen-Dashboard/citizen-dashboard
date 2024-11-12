@@ -7,11 +7,11 @@
 * 
 */
 
-
 import winston from 'winston';
 import 'winston-daily-rotate-file';
 import path from 'path';
 import { dirname } from 'node:path';
+
 // import { fileURLToPath } from 'node:url';
     
 // const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -53,7 +53,7 @@ class WinstonLogger {
                     datePattern: 'YYYY-MM-DD', 
                     zippedArchive: true,
                     maxSize: '10m', 
-                    maxFiles: '3d' 
+                    maxFiles: '3d'
                 }),
                 // Log all error logs to a separate file that rotates daily.
                 new winston.transports.DailyRotateFile({ 
@@ -62,8 +62,8 @@ class WinstonLogger {
                      datePattern: 'YYYY-MM-DD', 
                      zippedArchive: true,
                      maxSize: '10m', 
-                     maxFiles: '10d'  
-                    })
+                     maxFiles: '10d'
+                })
             ],
         }); 
     }
@@ -84,7 +84,7 @@ let applicationLogger;  // Variable to hold a singleton instance of the logger.
  * @param {string} filename - The name of the file to log to. Log file will be stored in the folder specified in the LOG_FILE_FOLDER environment variable.
  */
 export function initializeLogger(filename) {
-    console.log("Initializing logger for " + filename);
+    console.info("Initializing logger for " + filename);
     applicationLogger = new WinstonLogger(filename);
 }
 
@@ -101,9 +101,10 @@ export function getLogger(callingModule) {
     // The calling function passes the `meta.url` property with the file path as the value.
     // We need to extract the last part of the path as the module name.
   const getLabel = (numParts) => {
-        console.log(callingModule)
-        const parts = callingModule.split("/");
-        const label = parts.slice(-numParts).join("/");
+      console.debug("getLogger Called in module: ", callingModule)
+      const parts = callingModule.split("/");
+      const label = parts.slice(-numParts).join("/");
+      console.debug("creating logger for ", label)
         return label;
     }
 
@@ -112,7 +113,7 @@ export function getLogger(callingModule) {
     // This is not ideal and the assumption is that the method will be called first from the main entry point of the application.
     // The module name would be the last part of the file path of the entry point.
     if(!applicationLogger) {
-        initializeLogger(getLabel(1));
+        initializeLogger(process.env.module_name || process.env.LOG_FILE_NAME );
     }
     
     // Return a logger instance for the specified module.

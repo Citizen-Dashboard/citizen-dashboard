@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "indexer": "nodemon server/consumerServer.js",
-    "search": "nodemon server/searchServer.js"
+    "indexer": "set module_name=consumer-server && nodemon server/consumerServer.js",
+    "search": "set module_name=search-server && nodemon server/searchServer.js"
   },
   "keywords": [],
   "author": "",
