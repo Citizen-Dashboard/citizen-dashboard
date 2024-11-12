@@ -13,8 +13,4 @@ const client = new Client({
   },
 });
 
-client.ping()
-  .then(response => console.log("You are connected to Elasticsearch!"))
-  .catch(error => console.error("Elasticsearch is not connected."))
-
-  export default client; 
+export default client; 

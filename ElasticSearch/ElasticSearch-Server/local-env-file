@@ -5,14 +5,32 @@ elasticCloudID="<Your elastic cloud api key>"
 elasticCloudUserName="<Your elastic cloud User Name>"
 elasticCloudPassword="<Youre Elastic cloud password>"
 
+# Configurations to connect to opensearch aws cloud instance
+# uses role based authentication 
+opensearchCloudServiceURI="<your open search service URI on aws>"
+opensearchAccessRole="<your AWS Opensearch role"
+AWS_ACCESS_KEY_ID="<IAM Access Key ID>"
+AWS_SECRET_ACCESS_KEY="<IAM secret>"
+AWS_REGION="<AWS region where Opensearch is deployed>"
+
 # Configureations to connect to the local Elasticsearch instance
 elasticLocalAPIEndpoint="https://127.0.0.1:9200"
 elasticLocalUserName="elastic"
 elasticLocalPassword="<Your_elastic_local_password>"
-elasticClient="local"
 
+# Define which client to use
+# elasticClient="local"
+# elasticClient="elastic-cloud"
+elasticClient="aws-opensearch"
+
+
+## Elastic configurations
 # The name of the Elasticsearch index to use
 elasticIndex="city_dash_demo"
+# Number of shards to create if creating new index
+elasticShardsCount=4
+# Number of replicas to create when creating new index 
+elasticReplicasCount=1
 
 # Kafka configurations
 Kafka_Host="localhost"
@@ -25,4 +43,5 @@ kafka_agendaItem_group="index_agenda_item_group"
 
 # Logging configurations
 LOG_LEVEL="info"
+# LOG_LEVEL="debug"
 LOG_FILE_FOLDER="./logs"

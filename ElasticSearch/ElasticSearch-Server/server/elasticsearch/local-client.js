@@ -1,6 +1,6 @@
 /**
  * @file local-client.js
- * @description A file for creating a local client for Elasticsearch. This is not to be used in production.
+ * @description A file for creating a local client for Elasticsearch. This is not to be used in production. Refer to client.js to see how to change the client.
  * @version 1.0.0
  * @since 2024-07-23
  */
@@ -32,15 +32,5 @@ const client = new Client({
       rejectUnauthorized:false
     }
 });
-
-/* Esure we can reach the client. If client is not connected, exit the program with error code 1. */
-await client.ping()
-  .then(response => console.log("You are connected to Elasticsearch!"))
-  .catch(error => {
-    logger.error(error)
-    logger.error("Cannot connect to Elasticsearch. Exiting with error code 1.")
-    process.exit(1)
-  })
-
 
 export default client; 

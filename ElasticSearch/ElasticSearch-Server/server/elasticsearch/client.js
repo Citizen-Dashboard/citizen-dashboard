@@ -5,14 +5,36 @@
  * `process.env.elasticClient = 'cloud' creates a cloud client connection
  * 
  */
-const useLocalClient = (process.env.elasticClient === 'local');
-console.log("use client", useLocalClient, process.env.elasticClient)
-let clientContainer
-if(useLocalClient){
-    clientContainer = await import("./local-client.js");
-}
-else{
-    clientContainer = await import("./cloud-client");
+import {getLogger} from '../logging/logger.js';
+const logger = getLogger(import.meta.url);
+
+const clientType = process.env.elasticClient? process.env.elasticClient:'local';
+logger.debug("use client", clientType, process.env.elasticClient)
+let clientContainer;
+
+switch (clientType) {
+    case "elastic-cloud":
+      clientContainer = await import("./cloud-client.js");
+      break;
+    case "aws-opensearch":
+      clientContainer = await import("./opensearch-client.js")
+      break;
+
+    default:
+      clientContainer = await import("./local-client.js");
+        break;
 }
 
-export default clientContainer.default
+const client = clientContainer.default
+/* Esure we can reach the client. If client is not connected, exit the program with error code 1. */
+client.ping()
+  .then(response => console.log("You are connected to Elasticsearch!"))
+  .catch(error => {
+    console.error(error)
+    logger.error(error)
+    logger.error("Cannot connect to Elasticsearch. Exiting with error code 1.")
+    process.exit(1)
+  })
+
+
+export default client;
