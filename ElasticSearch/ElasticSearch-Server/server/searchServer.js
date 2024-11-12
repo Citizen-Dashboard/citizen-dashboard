@@ -21,7 +21,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-initializeLogger("search-server");
 
 
 const logger = getLogger(import.meta.url);
@@ -34,7 +33,7 @@ const port = 3001;
 app.use((req,res,next) =>{
     req.time = new Date(Date.now()).toString();
     logger.info([req.method, req.hostname, req.path, req.time]);
-    logger.debug({query: req.query, body: req.body, response: res});
+    logger.debug([req.query,req.body, res]);
     next();
 });
 
@@ -58,11 +57,21 @@ var corsOptions = {
 
 // Define the search route for the REST API that will be used by the nextJS app to search for agenda items.
 app.get('/search', cors(corsOptions), async (req, res) => {
-    logger.info('Searching for query: ' + req.query.query);
-    const queryTerm = req.query.query;
-    const searchResults = await elasticSearchClient.search(queryTerm);
-    logger.debug('Search results: ' + searchResults);
-    res.json(searchResults);
+    let searchResults = {results: [], total:0 }
+    try {
+        logger.info('Searching for query: ' + req.query.query);
+        const queryTerm = req.query.query;
+        searchResults = await elasticSearchClient.search(queryTerm);
+        searchResults.status = "OK"
+    }
+    catch(err){
+        logger.error("Unhandled error in /search");
+        searchResults.status = "Error"
+    }
+    finally {
+        logger.debug('Search results: ' + searchResults);
+        res.json(searchResults);
+    }
 }); 
 
 

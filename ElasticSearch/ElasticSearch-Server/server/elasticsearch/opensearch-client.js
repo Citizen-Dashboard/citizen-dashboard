@@ -156,8 +156,6 @@ class OpenSearchClient {
   async create_index_wrapper(params){
     return await this.client.indices.create(params)
   }
-
-
   
 /**
  * @method open_index_wrapper
@@ -179,6 +177,17 @@ class OpenSearchClient {
  */
   async index(params){
     return await this.client.index(params);
+  }
+
+  async search(params){
+    const apiResponse = await this.client.search(params);
+    if(apiResponse.statusCode==200){
+      return apiResponse.body
+    }
+    else {
+      logger.error(`Opensearch Request failed with status ${apiResponse.body.statusCode}` )
+      return {hits:{hits:[], total:{value:0, relation:eq}}}
+    }
   }
 }
 

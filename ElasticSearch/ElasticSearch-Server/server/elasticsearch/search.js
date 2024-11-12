@@ -17,17 +17,36 @@ export default class ElasticSearchClient {
      */
     static getSearchQuery(term) {
         return {
-            "multi_match": {
-                "query": term,
-                "type": "best_fields", 
-                "fields": [
-                    "agendaItemTitle^5",
-                    "agendaItemSummary",
-                    "agendaItemRecommendation^5",
-                    "decisionRecommendations^10",
-                    "decisionAdvice^10",
-                    "decisionBodyName^10"
-                ]
+            "query":{
+                "multi_match": {
+                    "query": term,
+                    "type": "best_fields", 
+                    "fields": [
+                        "agendaItemTitle^5",
+                        "agendaItemSummary",
+                        "agendaItemRecommendation^5",
+                        "decisionRecommendations^10",
+                        "decisionAdvice^10",
+                        "decisionBodyName^10"
+                    ],
+                    "minimum_should_match": "2<60%"
+                }
+            },
+            "sort": [
+                {
+                    "meetingDate": {
+                    "order": "desc"
+                    }
+                }
+            ], 
+            "highlight": {
+                "fields": {
+                    "agendaItemTitle":{},
+                    "agendaItemSummary":{},
+                    "agendaItemRecommendation":{},
+                    "decisionRecommendations":{},
+                    "decisionAdvice":{}
+                }
             }
         }
     }
@@ -75,9 +94,7 @@ export default class ElasticSearchClient {
         }
         const response = await this.client.search({
             index: this.indexName,
-            body: {
-                query: ElasticSearchClient.getSearchQuery(queryTerm)
-            }
+            body: ElasticSearchClient.getSearchQuery(queryTerm)
         })
         console.log(response);
         logger.info(`Found ${response.hits.total.value} results`);
