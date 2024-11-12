@@ -5,12 +5,18 @@
 */
 
 
-import client from "./client.js"
+import client from "./client.js";
+import { getLogger } from '../logging/logger.js';
+
+const logger = getLogger(import.meta.url);
+
 
 export default class ElasticIndexer {
-    constructor(indexName) {
+    constructor({indexName, indexMappings, indexSettings}) {
         this.client = client;
         this.indexName = indexName;
+        this.indexMappings = indexMappings;
+        this.indexSettings = indexSettings;
     }
 
     async init() {
@@ -21,82 +27,26 @@ export default class ElasticIndexer {
         //if index doesn't exist, create it and load documents
         if (await this.client.indices.exists({ index: this.indexName })) {
             //exit. index already exists
-            console.log('Index already exists. Skipping data load');
+            logger.debug('Index already exists. Proceeding to data load');
         } else {
-            console.log("Index does not exist. Creating new index, mapping and loading data");
-            await this.client.indices.create({ index: this.indexName }, (err, res, status) => {
-                console.log(err, res, status);
-            });
-            await this.client.indices.close({ index: this.indexName });
+            logger.debug("Index does not exist. Creating new index, mapping and loading data");
             await this.setupIndex();
             await this.client.indices.open({ index: this.indexName });
         }
+        logger.info("Indexer initialized")
     }
 
     async setupIndex() {
-        console.log("Defining analyzer for index");
-        await this.client.indices.putSettings({
+        logger.info(`Creating index ${this.indexName}`);
+        await this.client.indices.create({ 
             index: this.indexName,
             body: {
-                analysis: {
-                    analyzer: {
-                        "all_terms_analyzer": {
-                            "type": "custom",
-                            "tokenizer": "standard",
-                            "filter": [
-                                "lowercase"
-                            ]
-                        },
-                        "my_stop_analyzer": {
-                            "type": "custom",
-                            "tokenizer": "standard",
-                            "filter": [
-                                "lowercase",
-                                "english_stop"
-                            ]
-                        }
-                    },
-                    "filter": {
-                        "english_stop": {
-                            "type": "stop",
-                            "stopwords": "_english_"
-                        }
-                    }
-                }
+                settings: this.indexSettings,
+                mappings: this.indexMappings,
             }
         });
-
-        console.log("Creating Mapping index");
-        await this.client.indices.putMapping({
-            index: this.indexName,
-            body: {
-                properties: {
-                    'id': { enabled: false },
-                    'agendaItemId': { enabled: false },
-                    'decisionBodyId': { enabled: false },
-                    'decisionBodyName': { type: 'keyword' },
-                    'reference': { type: 'keyword' },
-                    'meetingDate': { type: 'date', format: 'epoch_millis' },
-                    'meetingId': { enabled: false },
-                    'termYear': { enabled: false },
-                    'agendaCd': { enabled: false },
-                    'itemStatus': { type: 'keyword' },
-                    'agendaItemTitle': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
-                    'agendaItemSummary': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
-                    'agendaItemRecommendation': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
-                    'decisionRecommendations': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
-                    'decisionAdvice': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
-                    'subjectTerms': { type: 'keyword' },
-                    'wardId': { type: 'keyword' }
-                }
-            }
-        }, (err, resp, status) => {
-            if (err) {
-                console.error(err, status);
-            } else {
-                console.log('Successfully Created Index mapping', status, resp);
-            }
-        });
+        
+        logger.info(`Index ${this.indexName} created`);
     }
 
 
@@ -107,16 +57,16 @@ export default class ElasticIndexer {
                 body: document,
                 id: document.agendaItemId
             });
-            console.log(`Document indexed successfully: ${response.result}`);
+            logger.debug(`Document indexed successfully: ${response.result}`);
             return response;
         } catch (error) {
-            console.error(`Error indexing document: ${error}`);
+            logger.error("Error indexing document");
             throw error;
         }
     }
 }
 
-/*
+/* Sample Data
 {
             "id": "ID_136274",
             "termId": 8,

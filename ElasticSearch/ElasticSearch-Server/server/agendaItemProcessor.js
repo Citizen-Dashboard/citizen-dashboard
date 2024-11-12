@@ -17,6 +17,7 @@
 
 import KafkaConsumer from "./kafka/kafka_consumer.js";
 import ElasticIndexer from "./elasticsearch/indexer.js";
+import { indexMappings, indexSettings} from "./elasticsearch/elastic-index-settings.js"
 import {getLogger} from "./logging/logger.js";
 
 
@@ -31,7 +32,7 @@ export default class AgendaItemProcessor {
         * It uses environment variables for configuration.
         */
         this.kafkaConsumer = new KafkaConsumer(process.env.kafka_agendaItem_topic);
-        this.elasticIndexer = new ElasticIndexer(process.env.elasticIndex);
+        this.elasticIndexer = new ElasticIndexer({indexName:process.env.elasticIndex, indexMappings, indexSettings});
     }
 
     async init(){
