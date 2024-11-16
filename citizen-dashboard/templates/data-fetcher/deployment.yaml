@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "citizen-dashboard.fullname" . }}-data-fetcher
+  labels:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.dataFetcher.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: data-fetcher
+          image: "{{ .Values.images.dataFetcher.repository }}:{{ .Values.images.dataFetcher.tag }}"
+          imagePullPolicy: {{ .Values.images.dataFetcher.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.dataFetcher.containerPort }}
+          env:
+            - name: FETCHER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "citizen-dashboard.name" . }}-secret
+                  key: FETCHER_API_KEY
+      imagePullSecrets:
+        - name: ghcr-secret

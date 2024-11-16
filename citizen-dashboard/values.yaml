@@ -1,0 +1,60 @@
+images:
+  dataFetcher:
+    repository: ghcr.io/citizen-dashboard/data-fetcher
+    tag: 4abc37898a12c38cf814f3cfca710e7519b70053
+    pullPolicy: IfNotPresent
+
+  dataStore:
+    repository: ghcr.io/citizen-dashboard/data-store
+    tag: 4abc37898a12c38cf814f3cfca710e7519b70053
+    pullPolicy: IfNotPresent
+
+  postgres:
+    repository: postgres
+    tag: 14-alpine
+    pullPolicy: IfNotPresent
+
+  pgadmin:
+    repository: dpage/pgadmin4
+    tag: latest
+    pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  name: ghcr-secret
+
+dataFetcher:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
+
+dataStore:
+  schedule: "0 0 * * *"
+  servicePort: 8000  # Assuming a port is needed
+
+postgres:
+  containerPort: 5432
+  servicePort: 5432
+  database: your_database_name
+  username: your_username
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mountPath: /var/lib/postgresql/data
+
+pgadmin:
+  containerPort: 80
+  servicePort: 80
+  serviceType: ClusterIP
+  email: admin@example.com
+
+secrets:
+  dataFetcher:
+    apiKey: 'test-api-key'
+  dataStore:
+    dbPassword: 'test-db-password'
+  postgres:
+    password: 'test_password'
+  pgadmin:
+    password: 'admin'

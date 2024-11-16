@@ -19,6 +19,14 @@ psycopg2-binary = "^2.9.9"
 flask = "^3.0.3"
 flask-cors = "^4.0.1"
 python-dotenv = "^1.0.1"
+pyhelm = "^2.14.5"
+kubernetes = "^31.0.0"
+docker = "^7.1.0"
+pyyaml = "^6.0.2"
+pyhelm3 = "^0.4.0"
+kubernetes-asyncio = "^31.1.0"
+pydantic = "^2.9.2"
+asyncpg = "^0.30.0"
 
 
 

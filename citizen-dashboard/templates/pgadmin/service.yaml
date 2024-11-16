@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+spec:
+  type: {{ .Values.pgadmin.serviceType }}
+  ports:
+    - port: {{ .Values.pgadmin.servicePort }}
+      targetPort: {{ .Values.pgadmin.containerPort }}
+      protocol: TCP

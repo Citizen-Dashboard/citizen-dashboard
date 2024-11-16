@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "citizen-dashboard.fullname" . }}-config
+data:
+  # Database Configurations
+  DB_HOST: {{ include "citizen-dashboard.fullname" . }}-postgres
+  DB_NAME: {{ .Values.postgres.database }}
+  DB_USER: {{ .Values.postgres.username }}
+  DB_PORT: "{{ .Values.postgres.servicePort }}"
+
+  # Data Fetcher Configurations
+  FETCHER_HOST: {{ include "citizen-dashboard.fullname" . }}-data-fetcher
+  FETCHER_PORT: "{{ .Values.dataFetcher.servicePort }}"
+
+  # Data Store Configurations
+  DATA_STORE_HOST: {{ include "citizen-dashboard.fullname" . }}-data-store
+  DATA_STORE_PORT: "{{ .Values.dataStore.servicePort }}"
+
+  # pgAdmin Configurations
+  PGADMIN_HOST: {{ include "citizen-dashboard.fullname" . }}-pgadmin
+  PGADMIN_PORT: "{{ .Values.pgadmin.servicePort }}"
