@@ -147,7 +147,7 @@ class adgendaItemFetcher:
         agendaItemsList = []
         meetingsFromDateUTC = meetingsFromDateUTC.replace(hour=0, minute=0, second=0, microsecond=0)
         meetingToDateUTC = meetingToDateUTC.replace(hour=0, minute=0, second=0, microsecond=0)
-        logger.info(f"Fetching agenda Items for date range {meetingToDateUTC.isoformat()} - {meetingToDateUTC.isoformat()}")
+        logger.info(f"Fetching agenda Items for date range {meetingsFromDateUTC.isoformat()} - {meetingToDateUTC.isoformat()}")
         
         while hasNextPage:
             nextPage+=1
