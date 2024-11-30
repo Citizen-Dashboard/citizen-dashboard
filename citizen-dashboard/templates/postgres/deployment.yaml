@@ -1,42 +1,47 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "citizen-dashboard.name" . }}-postgres
+  name: citizen-dashboard-postgres
   labels:
-    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: citizen-dashboard
+    app.kubernetes.io/instance: citizen-dashboard
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: citizen-dashboard
+      app.kubernetes.io/instance: citizen-dashboard
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: citizen-dashboard
+        app.kubernetes.io/instance: citizen-dashboard
     spec:
       containers:
         - name: postgres
           image: "{{ .Values.images.postgres.repository }}:{{ .Values.images.postgres.tag }}"
           imagePullPolicy: {{ .Values.images.postgres.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.postgres.containerPort }}
           env:
             - name: POSTGRES_DB
-              value: {{ .Values.postgres.database | quote }}
+              value: "{{ .Values.postgres.database }}"
             - name: POSTGRES_USER
-              value: {{ .Values.postgres.username | quote }}
+              value: "{{ .Values.postgres.username }}"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "citizen-dashboard.name" . }}-secret
-                  key: POSTGRES_PASSWORD
+                  name: citizen-dashboard-secrets
+                  key: postgres-password
+          ports:
+            - containerPort: {{ .Values.postgres.containerPort }}
           volumeMounts:
-            - name: postgres-storage
+            - name: postgres-data
               mountPath: {{ .Values.postgres.persistence.mountPath }}
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d/
       volumes:
-        - name: postgres-storage
+        - name: postgres-data
           persistentVolumeClaim:
             claimName: {{ include "citizen-dashboard.name" . }}-postgres-pvc
+        - name: init-script
+          configMap:
+            name: citizen-dashboard-postgres-init

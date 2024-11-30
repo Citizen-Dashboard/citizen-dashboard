@@ -6,5 +6,9 @@ spec:
   type: {{ .Values.pgadmin.serviceType }}
   ports:
     - port: {{ .Values.pgadmin.servicePort }}
-      targetPort: {{ .Values.pgadmin.containerPort }}
+      containerPort: {{ .Values.pgadmin.containerPort }}
+      servicePort: {{ .Values.pgadmin.servicePort }}
       protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -23,11 +23,5 @@ spec:
           imagePullPolicy: {{ .Values.images.dataFetcher.pullPolicy }}
           ports:
             - containerPort: {{ .Values.dataFetcher.containerPort }}
-          env:
-            - name: FETCHER_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "citizen-dashboard.name" . }}-secret
-                  key: FETCHER_API_KEY
       imagePullSecrets:
         - name: ghcr-secret

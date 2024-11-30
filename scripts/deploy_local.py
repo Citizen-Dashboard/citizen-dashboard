@@ -15,7 +15,7 @@ from typing import Optional, Dict
 KUBECONFIG_PATH = os.getenv('KUBECONFIG_PATH', None)  # Optional: Specify custom kubeconfig path
 RELEASE_NAME = os.getenv('HELM_RELEASE_NAME', 'citizen-dashboard')
 NAMESPACE_NAME = os.getenv('HELM_NAMESPACE', 'citizen-dashboard')
-HELM_CHART_PATH = os.getenv('HELM_CHART_PATH', '/home/razboy/citizen-dashboard/citizen-dashboard/')  # Ensure this path is secure
+HELM_CHART_PATH = os.getenv('HELM_CHART_PATH', '../citizen-dashboard/citizen-dashboard/')  # Ensure this path is secure
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 # ============================
@@ -24,24 +24,26 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
 def setup_logger() -> logging.Logger:
     """
-    Set up the logger for the script with configurable log levels.
+    Set up the root logger for the script with configurable log levels.
     """
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
     logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))  # Dynamic log level based on environment
+
+    # Clear existing handlers to avoid duplicate logs
+    logger.handlers = []
 
     # Create console handler with a higher log level
     ch = logging.StreamHandler()
     ch.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
-    # Create formatter and add it to the handlers
+    # Create formatter and add it to the handler
     formatter = logging.Formatter(
         '%(asctime)s - %(levelname)s - %(message)s'
     )
     ch.setFormatter(formatter)
 
-    # Add the handlers to the logger if not already added
-    if not logger.handlers:
-        logger.addHandler(ch)
+    # Add the handler to the logger
+    logger.addHandler(ch)
 
     return logger
 
@@ -52,14 +54,9 @@ def setup_logger() -> logging.Logger:
 async def create_namespace(namespace_name: str, labels: Optional[Dict[str, str]] = None, logger: Optional[logging.Logger] = None):
     """
     Create a Kubernetes namespace with optional labels.
-
-    Args:
-        namespace_name (str): Name of the namespace to create.
-        labels (Optional[Dict[str, str]]): Labels to assign to the namespace.
-        logger (Optional[logging.Logger]): Logger instance for logging.
     """
     if logger is None:
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger()
 
     try:
         # Load Kubernetes configuration securely
@@ -105,16 +102,9 @@ async def create_namespace(namespace_name: str, labels: Optional[Dict[str, str]]
 async def deploy_helm_release(release_name: str, chart_path: str, namespace: str, logger: Optional[logging.Logger] = None):
     """
     Deploy or upgrade a Helm release.
-
-    Args:
-        release_name (str): Name of the Helm release.
-        chart_path (str): Path to the Helm chart directory.
-        namespace (str): Kubernetes namespace to deploy the release.
-        logger (Optional[logging.Logger]): Logger instance for logging.
     """
     if logger is None:
-        logger = logging.getLogger(__name__)
-
+        logger = logging.getLogger()
 
     if not os.path.isdir(chart_path):
         logger.error(f"Chart path '{chart_path}' does not exist or is not a directory.")
@@ -126,25 +116,19 @@ async def deploy_helm_release(release_name: str, chart_path: str, namespace: str
 
         # Load the Helm chart
         try:
-            
             chart = await helm_client.get_chart(chart_path)
             logger.debug(f"Helm chart loaded from path: '{chart_path}'.")
         except Exception as chart_ex:
             logger.error(f"Failed to load Helm chart from '{chart_path}': {chart_ex}")
             raise
 
-        # # Validate the Helm chart
-        # if not chart.is_valid():
-        #     logger.error(f"Invalid Helm chart at path: '{chart_path}'.")
-        #     raise ValueError(f"Invalid Helm chart at path: '{chart_path}'.")
-
         # Install or upgrade the Helm release
         await helm_client.install_or_upgrade_release(
             release_name=release_name,
             chart=chart,
             namespace=namespace,
-            wait=False,          # Wait for the deployment to complete
-            timeout="300s",        # Timeout in seconds
+            wait=False,
+            timeout="300s",
             cleanup_on_fail=True,
             atomic=True,
         )
@@ -190,8 +174,10 @@ async def main():
 
     except Exception as e:
         logger.critical(f"Deployment script failed: {e}")
-        # Optionally, implement retry logic or alerting here
         raise
+    finally:
+        # Flush and close logging handlers
+        logging.shutdown()
 
 # ============================
 # Entry Point

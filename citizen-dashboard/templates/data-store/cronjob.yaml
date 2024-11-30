@@ -25,7 +25,7 @@ spec:
                 - configMapRef:
                     name: {{ include "citizen-dashboard.fullname" . }}-config
                 - secretRef:
-                    name: {{ include "citizen-dashboard.name" . }}-secret
+                    name: {{ include "citizen-dashboard.name" . }}-secrets
           restartPolicy: OnFailure
           imagePullSecrets:
             - name: ghcr-secret

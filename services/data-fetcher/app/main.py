@@ -1,7 +1,8 @@
 # app/main.py
 
 from flask import Flask, jsonify, request
-from app.fetcher import fetch_data, validate_datetime
+
+from data_fetcher import fetch_data, validate_datetime
 
 app = Flask(__name__)
 

@@ -44,8 +44,8 @@ postgres:
     mountPath: /var/lib/postgresql/data
 
 pgadmin:
-  containerPort: 80
-  servicePort: 80
+  containerPort: "8080"
+  servicePort: 8080
   serviceType: ClusterIP
   email: admin@example.com
 

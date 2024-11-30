@@ -1870,6 +1870,36 @@ six = ">=1.9.0"
 urllib3 = ">=1.24.2"
 
 [[package]]
+name = "lightkube"
+version = "0.15.5"
+description = "Lightweight kubernetes client library"
+optional = false
+python-versions = "*"
+files = [
+    {file = "lightkube-0.15.5-py3-none-any.whl", hash = "sha256:0d93be743cbeae022d18a1d3fbb45d1df58f9a603ea0061237842658f68d93fd"},
+    {file = "lightkube-0.15.5.tar.gz", hash = "sha256:5edbfd1aee83398374179f41f4897519e8f89dc9754c866d40bbdc68c49c033f"},
+]
+
+[package.dependencies]
+httpx = ">=0.24.0"
+lightkube-models = ">=1.15.12.0"
+PyYAML = "*"
+
+[package.extras]
+dev = ["pytest", "pytest-asyncio (<0.17.0)", "respx"]
+
+[[package]]
+name = "lightkube-models"
+version = "1.31.1.8"
+description = "Models and Resources for lightkube module"
+optional = false
+python-versions = "*"
+files = [
+    {file = "lightkube-models-1.31.1.8.tar.gz", hash = "sha256:14fbfa990b4d3393fa4ac3e9e46d67514c4d659508e296b30f1a5d254eecc097"},
+    {file = "lightkube_models-1.31.1.8-py3-none-any.whl", hash = "sha256:50c0e2dd2c125cd9b50e93269e2d212bcbec19f7b00de91aa66a5ec320772fae"},
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.2"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -3989,4 +4019,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "1f2389c769c1008f955c4e31135c6725a5caa467af3aed3dba80584eaec29b4b"
+content-hash = "7d7ff8a4ce637a4a0ea8cea022a825cdfe5388aa36bee2b1df2732478006f990"

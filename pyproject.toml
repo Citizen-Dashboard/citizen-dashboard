@@ -27,6 +27,7 @@ pyhelm3 = "^0.4.0"
 kubernetes-asyncio = "^31.1.0"
 pydantic = "^2.9.2"
 asyncpg = "^0.30.0"
+lightkube = "^0.15.5"
 
 
 
