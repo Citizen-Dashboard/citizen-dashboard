@@ -11,7 +11,7 @@ images:
 
   postgres:
     repository: postgres
-    tag: 14-alpine
+    tag: 17.2
     pullPolicy: IfNotPresent
 
   pgadmin:
@@ -22,7 +22,7 @@ images:
 imagePullSecrets:
   name: ghcr-secret
 
-dataFetcher:
+dataFetcher: 
   replicas: 1
   containerPort: 5000
   servicePort: 5000
@@ -35,16 +35,22 @@ dataStore:
 postgres:
   containerPort: 5432
   servicePort: 5432
-  database: your_database_name
+  database: citizen_dashboard
   username: your_username
   persistence:
     enabled: true
     accessMode: ReadWriteOnce
     size: 1Gi
     mountPath: /var/lib/postgresql/data
+  pgHba: |
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    local   all             all                                     trust
+    host    all             all             127.0.0.1/32            trust
+    host    all             all             ::1/128                 trust
+    host    all             all             10.0.0.0/8              md5 
 
 pgadmin:
-  containerPort: "8080"
+  containerPort: 8080
   servicePort: 8080
   serviceType: ClusterIP
   email: admin@example.com

@@ -11,8 +11,8 @@ data:
           "Group": "Servers",
           "Host": "citizen-dashboard-postgres",
           "Port": 5432,
-          "MaintenanceDB": "your_database_name",
-          "Username": "your_username",
+          "MaintenanceDB": "{{ .Values.postgres.database }}",
+          "Username": "{{ .Values.postgres.username }}",
           "SSLMode": "prefer",
           "PassFile": "/pgpassfile"
         }

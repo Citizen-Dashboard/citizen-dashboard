@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: {{ .Values.postgres.servicePort }}
       targetPort: {{ .Values.postgres.containerPort }}
