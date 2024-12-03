@@ -126,7 +126,7 @@ def insert_data_into_db(data, max_retries=5, retry_backoff=2):
 
 def main():
     try:
-        today = datetime.now(datetime.UTC)
+        today = datetime.now()
         yesterday = today - timedelta(days=1)
         from_date = yesterday.isoformat()
         to_date = today.isoformat()
