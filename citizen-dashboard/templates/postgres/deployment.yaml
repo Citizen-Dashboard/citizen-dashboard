@@ -17,9 +17,6 @@ spec:
         app.kubernetes.io/name: citizen-dashboard
         app.kubernetes.io/instance: citizen-dashboard
     spec:
-      securityContext:
-          fsGroup: 999          # Default group for PostgreSQL
-          runAsUser: 999        # Default user for PostgreSQL
       containers:
         - name: postgres
           image: "{{ .Values.images.postgres.repository }}:{{ .Values.images.postgres.tag }}"
@@ -41,9 +38,6 @@ spec:
               mountPath: {{ .Values.postgres.persistence.mountPath }}
             - name: init-script
               mountPath: /docker-entrypoint-initdb.d/
-            - name: postgres-config
-              mountPath: /var/lib/postgresql/data/pg_hba.conf
-              subPath: pg_hba.conf
       volumes:
         - name: postgres-data
           persistentVolumeClaim:

@@ -8,5 +8,3 @@ metadata:
 data:
   init-database.sql: |-
     {{- .Files.Get "scripts/init-database.sql" | nindent 4 }}
-  pg_hba.conf: |
-    {{ .Values.postgres.pgHba | nindent 4 }}

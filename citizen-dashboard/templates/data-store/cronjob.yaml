@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "citizen-dashboard.fullname" . }}-data-store
+  name: {{ include "citizen-dashboard.name" . }}-data-store
   labels:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -23,7 +23,7 @@ spec:
                 - containerPort: {{ .Values.dataStore.containerPort | default 8000 }}
               envFrom:
                 - configMapRef:
-                    name: {{ include "citizen-dashboard.fullname" . }}-config
+                    name: {{ include "citizen-dashboard.name" . }}-config
                 - secretRef:
                     name: {{ include "citizen-dashboard.name" . }}-secrets
           restartPolicy: OnFailure
