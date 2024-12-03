@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_NAME = os.environ.get('DB_NAME', 'your_db_name')
 DB_USER = os.environ.get('DB_USER', 'your_db_user')
-DB_PASSWORD = os.environ.get('DB_PASSWORD', 'your_db_password')
+DB_PASSWORD = os.environ.get('postgres-password', 'your_db_password')
 DB_PORT = os.environ.get('DB_PORT', '5432')
 
 FETCHER_HOST = os.environ.get('FETCHER_HOST', 'data-fetcher-service')
@@ -50,7 +50,7 @@ def insert_data_into_db(data):
             %(agendaItemSummary)s, %(agendaItemRecommendation)s, %(decisionRecommendations)s,
             %(decisionAdvice)s, %(subjectTerms)s, %(backgroundAttachmentId)s,
             %(agendaItemAddress)s, %(address)s, %(geoLocation)s, %(wardId)s
-        ) ON CONFLICT (id) DO NOTHING
+        ) ON CONFLICT (reference) DO NOTHING
         """
 
         records = data.get('Records', [])
