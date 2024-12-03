@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+spec:
+  type: {{ .Values.pgadmin.serviceType }}
+  ports:
+    - port: {{ .Values.pgadmin.servicePort }}
+      containerPort: {{ .Values.pgadmin.containerPort }}
+      servicePort: {{ .Values.pgadmin.servicePort }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

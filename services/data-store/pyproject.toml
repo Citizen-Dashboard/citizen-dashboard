@@ -11,6 +11,8 @@ confluent-kafka = "^2.5.0"
 sqlalchemy = "^2.0.32"
 psycopg2-binary = "^2.9.9"
 sqlalchemy-utils = "^0.41.2"
+asyncpg = "^0.30.0"
+requests = "^2.32.3"
 
 
 [build-system]

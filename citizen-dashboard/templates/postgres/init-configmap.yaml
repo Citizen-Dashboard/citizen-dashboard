@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: citizen-dashboard-postgres-init
+  labels:
+    app.kubernetes.io/name: citizen-dashboard
+    app.kubernetes.io/instance: citizen-dashboard
+data:
+  init-database.sql: |-
+    {{- .Files.Get "scripts/init-database.sql" | nindent 4 }}
