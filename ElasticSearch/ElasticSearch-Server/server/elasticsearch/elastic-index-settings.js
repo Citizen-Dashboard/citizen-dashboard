@@ -10,6 +10,7 @@ export const indexMappings = {
         'termYear': { enabled: false },
         'agendaCd': { enabled: false },
         'itemStatus': { type: 'keyword' },
+        'ai_summary': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
         'agendaItemTitle': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
         'agendaItemSummary': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
         'agendaItemRecommendation': { type: 'text', analyzer: 'all_terms_analyzer', search_analyzer: 'my_stop_analyzer', search_quote_analyzer: 'all_terms_analyzer' },
