@@ -3,7 +3,7 @@
 import AppBar from "@/app/AppBar";
 import Loading from "@/app/Loading";
 import SearchBar from "@/app/SearchBar";
-import SearchResults from "@/app/SearchResults/clientside";
+import SearchResults from "@/app/SearchResults/ClientsideResults";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from 'react'
 

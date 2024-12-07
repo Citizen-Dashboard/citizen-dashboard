@@ -1,7 +1,10 @@
 'use server'
 
+import { getSearchQuery, searchResultsLimit } from "@/services/clients/elastic-index-settings";
+import { getHighlightedSearchResults, sanitizeSearchResults } from "@/services/SearchResultParser";
 import { Client, ClientOptions, estypes } from "@elastic/elasticsearch";
 import fs from "fs";
+import { get } from "http";
 
 class ElasticSearchClient {
     clientReady: boolean = false;
@@ -29,23 +32,31 @@ class ElasticSearchClient {
         if (!this.clientReady) {
             await this.init();
         }
-        const response = await this.client?.search<AgendaItemElasticDcoument>({
+        // const searchQuery = {
+        //     index: this.indexName,
+        //     /* query: {
+        //         multi_match: {
+        //             query: queryTerm,
+        //             type: "best_fields", 
+        //             fields: [
+        //                 "ai_summary^10",
+        //                 "agendaItemTitle^5",
+        //                 "agendaItemSummary",
+        //                 "agendaItemRecommendation^5",
+        //                 "decisionRecommendations^10",
+        //                 "decisionAdvice^10",
+        //                 "decisionBodyName^10"
+        //             ]
+        //         }
+        //     } */
+        //    query: getSearchQuery(queryTerm).query,
+        // }
+        
+        const searchQuery = {
+            ...getSearchQuery(queryTerm),
             index: this.indexName,
-            query: {
-                multi_match: {
-                    query: queryTerm,
-                    type: "best_fields", 
-                    fields: [
-                        "agendaItemTitle^5",
-                        "agendaItemSummary",
-                        "agendaItemRecommendation^5",
-                        "decisionRecommendations^10",
-                        "decisionAdvice^10",
-                        "decisionBodyName^10"
-                    ]
-                }
-            }
-        })
+        }
+        const response = await this.client?.search<AgendaItemElasticDcoument>(searchQuery)
         if (!response) {
             return {
                 results: []
@@ -54,23 +65,11 @@ class ElasticSearchClient {
 
         console.log(response.hits.total, typeof(response.hits.total))
         return {
-            results: this.sanitizeSearchResults(response.hits.hits)
+            results: sanitizeSearchResults(response?.hits.hits as unknown as SearchResult[]),
+            highlightedResults: getHighlightedSearchResults(response?.hits.hits as unknown as SearchResult[]),
+            total: response?.hits.total ||0,
+            limit: searchResultsLimit
         };
-    }
-
-
-    sanitizeSearchResults(searchResults: estypes.SearchHit<AgendaItemElasticDcoument>[]) {
-        return searchResults.map((result) => {
-            return {
-                title: result._source?.agendaItemTitle,
-                summary: result._source?.agendaItemSummary,
-                recommendation: result._source?.agendaItemRecommendation,
-                decisionRecommendations: result._source?.decisionRecommendations,
-                decisionAdvice: result._source?.decisionAdvice,
-                itemStatus: result._source?.itemStatus,
-                reference: result._source?.reference
-            }
-        })
     }
 }
 

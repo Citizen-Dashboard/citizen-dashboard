@@ -52,3 +52,50 @@ export const indexSettings = {
         }
     }
 }
+
+export const searchResultsLimit = 30; 
+
+
+ /**
+ * @method getSearchQuery
+ * @description Get the search query for the OpenSearch index. We define the search query for the OpenSearch index in this method.
+ * @param {string} term - The search term.
+ * @returns {object} The search query.
+ */
+ export function getSearchQuery(term:string) {
+    return {
+        "size":`${searchResultsLimit}`,
+        "query":{
+            "multi_match": {
+                "query": term,
+                "type": "best_fields", 
+                "fields": [
+                    "ai_summary^10",
+                    "agendaItemTitle^5",
+                    "agendaItemSummary",
+                    "agendaItemRecommendation^5",
+                    "decisionRecommendations^10",
+                    "decisionAdvice^10",
+                    "decisionBodyName^10"
+                ],
+                "minimum_should_match": "2<60%"
+            }
+        },
+        "sort": [
+            {
+                "meetingDate": {
+                "order": "desc"
+                }
+            }
+        ], 
+        "highlight": {
+            "fields": {
+                "ai_summary":{},
+                "agendaItemSummary":{},
+                "agendaItemRecommendation":{},
+                "decisionRecommendations":{},
+                "decisionAdvice":{}
+            }
+        }
+    }
+}

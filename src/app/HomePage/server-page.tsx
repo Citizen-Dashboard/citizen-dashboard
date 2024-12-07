@@ -1,7 +1,7 @@
 import AppBar from "@/app/AppBar";
 import Loading from "@/app/Loading";
 import SearchBar from "@/app/SearchBar";
-import SearchResults from "@/app/SearchResults/serverside";
+import SearchResults from "@/app/SearchResults/ServersideResults";
 import { Suspense } from "react";
 
 
@@ -32,7 +32,7 @@ export default async function Home(
   const query = searchParams?.query|| '';
 
   return (
-    <div>
+    <div className="bg-neutral-100">
       <AppBar />
       <SearchBar />
       {query!=="" &&
