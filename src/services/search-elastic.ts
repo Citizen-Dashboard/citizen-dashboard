@@ -2,9 +2,8 @@
 
 import { getSearchQuery, searchResultsLimit } from "@/services/clients/elastic-index-settings";
 import { getHighlightedSearchResults, sanitizeSearchResults } from "@/services/SearchResultParser";
-import { Client, ClientOptions, estypes } from "@elastic/elasticsearch";
+import { Client, ClientOptions } from "@elastic/elasticsearch";
 import fs from "fs";
-import { get } from "http";
 
 class ElasticSearchClient {
     clientReady: boolean = false;
