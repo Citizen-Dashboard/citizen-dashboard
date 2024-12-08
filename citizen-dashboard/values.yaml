@@ -1,12 +1,12 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: a6bb1f29db3efd7d771d25d219915ab68e9f7e35       
+    tag: 54f0940d5516d2b6f3a03d71785019a524a6a91a       
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: a6bb1f29db3efd7d771d25d219915ab68e9f7e35       
+    tag: 54f0940d5516d2b6f3a03d71785019a524a6a91a       
     pullPolicy: IfNotPresent
 
   postgres:

@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: data-fetcher
 spec:
   type: {{ .Values.dataFetcher.serviceType }}
   ports:
@@ -14,3 +15,4 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: data-fetcher
