@@ -1,12 +1,12 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: 98612c1744e280ad444af0acc011711c9109525c         
+    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: 98612c1744e280ad444af0acc011711c9109525c         
+    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
     pullPolicy: IfNotPresent
 
   postgres:
@@ -26,7 +26,7 @@ dataFetcher:
   replicas: 1
   containerPort: 5000
   servicePort: 5000
-  serviceType: NodePort
+  serviceType: ClusterIP
 
 dataStore:
   schedule: "0 0 * * *"

@@ -102,15 +102,20 @@ def insert_data_into_db(data):
         return {"error": str(e)}
 
 
-@app.route('/store-data', methods=['GET'])
+@app.route('/store-data', methods=['POST'])
 def store_data():
     """Endpoint to fetch and store data in the database."""
     try:
-        from_date = request.args.get('from_date')
-        to_date = request.args.get('to_date')
+        # Parse JSON payload
+        payload = request.get_json()
+        if not payload:
+            return jsonify({"error": "Invalid request. JSON payload is required."}), 400
+
+        from_date = payload.get('from_date')
+        to_date = payload.get('to_date')
 
         if not from_date or not to_date:
-            return jsonify({"error": "from_date and to_date are required parameters."}), 400
+            return jsonify({"error": "from_date and to_date are required fields in the JSON payload."}), 400
 
         # Fetch data from the data-fetcher API
         data = fetch_data_from_api(from_date, to_date)
