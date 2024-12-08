@@ -1,19 +1,38 @@
 from flask import Flask, jsonify, request
 import psycopg2
+import requests
 import json
 import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
+# Database configuration
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_NAME = os.environ.get('DB_NAME', 'your_db_name')
 DB_USER = os.environ.get('DB_USER', 'your_db_user')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', 'your_db_password')
 DB_PORT = os.environ.get('DB_PORT', '5432')
 
+# Fetcher service configuration
+FETCHER_HOST = os.environ.get('FETCHER_HOST', 'data-fetcher-service')
+FETCHER_PORT = os.environ.get('FETCHER_PORT', '5000')
+
+
+def fetch_data_from_api(from_date: str, to_date: str):
+    """Fetch data from the data-fetcher API."""
+    url = f'http://{FETCHER_HOST}:{FETCHER_PORT}/fetch-data'
+    params = {
+        'from_date': from_date,
+        'to_date': to_date
+    }
+    response = requests.get(url, params=params, timeout=300)
+    response.raise_for_status()
+    return response.json()
+
 
 def insert_data_into_db(data):
+    """Insert fetched data into the database."""
     try:
         conn = psycopg2.connect(
             host=DB_HOST,
@@ -43,6 +62,7 @@ def insert_data_into_db(data):
         """
 
         records = data.get('Records', [])
+        inserted_count = 0
         for record in records:
             record_prepared = {
                 'id': record.get('id'),
@@ -72,24 +92,42 @@ def insert_data_into_db(data):
                 'wardId': json.dumps(record.get('wardId')),
             }
             cur.execute(insert_query, record_prepared)
+            inserted_count += 1
 
         conn.commit()
         cur.close()
         conn.close()
-        return {"message": f"Inserted {len(records)} records into the database."}
+        return {"inserted_count": inserted_count, "total_records": len(records)}
     except Exception as e:
         return {"error": str(e)}
 
 
-@app.route('/store-data', methods=['POST'])
+@app.route('/store-data', methods=['GET'])
 def store_data():
+    """Endpoint to fetch and store data in the database."""
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
+        from_date = request.args.get('from_date')
+        to_date = request.args.get('to_date')
 
-        response = insert_data_into_db(data)
-        return jsonify(response)
+        if not from_date or not to_date:
+            return jsonify({"error": "from_date and to_date are required parameters."}), 400
+
+        # Fetch data from the data-fetcher API
+        data = fetch_data_from_api(from_date, to_date)
+        fetched_count = len(data.get('Records', []))
+
+        # Insert fetched data into the database
+        db_response = insert_data_into_db(data)
+
+        return jsonify({
+            "message": "Data processed successfully.",
+            "fetch_details": {
+                "from_date": from_date,
+                "to_date": to_date,
+                "fetched_count": fetched_count
+            },
+            "db_response": db_response
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

@@ -1,12 +1,12 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: 4f7bf640aaa41dd185cfe27726e6de66ca172f39        
+    tag: 98612c1744e280ad444af0acc011711c9109525c         
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: 4f7bf640aaa41dd185cfe27726e6de66ca172f39        
+    tag: 98612c1744e280ad444af0acc011711c9109525c         
     pullPolicy: IfNotPresent
 
   postgres:
@@ -30,7 +30,7 @@ dataFetcher:
 
 dataStore:
   schedule: "0 0 * * *"
-  servicePort: 8000  # Assuming a port is needed
+  containerPort: 5000
 
 postgres:
   containerPort: 5432
