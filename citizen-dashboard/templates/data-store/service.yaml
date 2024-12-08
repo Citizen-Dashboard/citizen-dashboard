@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "citizen-dashboard.name" . }}-data-store
+  labels:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: data-store
+spec:
+  type: {{ .Values.dataStore.serviceType | default "ClusterIP" }}
+  ports:
+    - port: {{ .Values.dataStore.servicePort | default 8000 }}
+      targetPort: {{ .Values.dataStore.containerPort | default 8000 }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: data-store
