@@ -16,8 +16,5 @@ RUN poetry config virtualenvs.create false && poetry install --no-dev
 # Copy the rest of the application code
 COPY app/ /app/
 
-# Expose the port the app runs on
-EXPOSE 5000
-
 # Run the application
 CMD ["python", "main.py"]
