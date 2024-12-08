@@ -147,7 +147,7 @@ const SearchResults = async ({query}:{query: string}) => {
                                 </div>
                                 
                                 <div className="prose">
-                                    <div className="collapse collapse-arrow bg-base-200 text-base-100 dark:border dark:border-neutral-50">
+                                    <div className="collapse collapse-arrow bg-base-200 text-base-900 dark:border dark:border-neutral-50">
                                         <input type="checkbox" name={`${agendaItem.reference}_details`} className="accordion-toggle" />
                                         <div className="collapse-title text-m font-m underline">Details</div>
                                         <div className="collapse-content">
