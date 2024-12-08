@@ -1,28 +1,17 @@
+from flask import Flask, jsonify, request
 import psycopg2
 import json
 import os
-import requests
 from datetime import datetime, timedelta
+
+app = Flask(__name__)
 
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_NAME = os.environ.get('DB_NAME', 'your_db_name')
 DB_USER = os.environ.get('DB_USER', 'your_db_user')
-DB_PASSWORD = os.environ.get('postgres-password', 'your_db_password')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'your_db_password')
 DB_PORT = os.environ.get('DB_PORT', '5432')
 
-FETCHER_HOST = os.environ.get('FETCHER_HOST', 'data-fetcher-service')
-FETCHER_PORT = os.environ.get('FETCHER_PORT', '5000')
-
-def fetch_data_from_api(from_date: str, to_date: str):
-    url = f'http://{FETCHER_HOST}:{FETCHER_PORT}/fetch-data'
-    params = {
-        'from_date': from_date,
-        'to_date': to_date
-    }
-    response = requests.get(url, params=params, timeout=300)
-    response.raise_for_status()
-    data = response.json()
-    return data
 
 def insert_data_into_db(data):
     try:
@@ -55,7 +44,6 @@ def insert_data_into_db(data):
 
         records = data.get('Records', [])
         for record in records:
-            # Prepare the record
             record_prepared = {
                 'id': record.get('id'),
                 'termId': record.get('termId'),
@@ -88,24 +76,28 @@ def insert_data_into_db(data):
         conn.commit()
         cur.close()
         conn.close()
-        print(f"Inserted {len(records)} records into the database.")
+        return {"message": f"Inserted {len(records)} records into the database."}
     except Exception as e:
-        print(f"Failed to connect to the database: {e}")
-        return False
+        return {"error": str(e)}
 
-def main():
+
+@app.route('/store-data', methods=['POST'])
+def store_data():
     try:
-        # Example: Fetch data from yesterday to today
-        today = datetime.utcnow()
-        yesterday = today - timedelta(days=1)
-        from_date = yesterday.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-        to_date = today.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
 
-        data = fetch_data_from_api(from_date, to_date)
-        print("Fetched data from API.")
-        insert_data_into_db(data)
+        response = insert_data_into_db(data)
+        return jsonify(response)
     except Exception as e:
-        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/healthz', methods=['GET'])
+def healthz():
+    return "OK", 200
+
 
 if __name__ == '__main__':
-    main()
+    app.run(host='0.0.0.0', port=5000)
