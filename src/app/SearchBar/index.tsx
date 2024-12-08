@@ -60,11 +60,11 @@ const SearchBar = () => {
   return (
     <form onSubmit={handleSearchClick}>
       <div className="flex flex-row items-center">
-        <div className="join p-10 w-screen justify-center">
+        <div className="join px-4 py-8 md:p-10 w-screen justify-center">
             <input
               type="text"
               placeholder="Search"
-              className="input bg-base-300 join-item w-1/2"
+              className="input bg-base-300 join-item w-4/5 md:w-3/4 lg:w-1/2"
               onChange={handleSearchQuery}
               defaultValue={searchParams.get("query")?.toString()}
             />

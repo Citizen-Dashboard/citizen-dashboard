@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "citizen Dashboard Search Tool - ElasticSearch",
-  description: "Search citizen dashboard data using ElasticSearch",
+  title: "citizen Dashboard Search | CitizenDashboard.ca",
+  description: "Search citizen dashboard data",
 };
 
 export default function RootLayout({

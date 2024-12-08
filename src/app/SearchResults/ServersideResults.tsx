@@ -127,7 +127,7 @@ const SearchResults = async ({query}:{query: string}) => {
     }
 
     return (
-        <div className="flex flex-col p-10">
+        <div className="flex flex-col p-4 md:p-10">
             <div className="flex flex-col w-full">
                 {results.length>0 && total > 1 && <div>{(limit>total)?`Found ${total} matches.`:`Showing top ${limit} results.`}</div>}
                 {results.length>0 && results.map((agendaItem) => (
@@ -136,7 +136,7 @@ const SearchResults = async ({query}:{query: string}) => {
                             <div className="card-body">
                                 <div className="prose w-full">
                                     <h2>{agendaItem.title}</h2>
-                                    <div className="flex flex-row gap-3">
+                                    <div className="flex flex-row gap-3 items-start flex-wrap">
                                         <Chip>{agendaItem.meetingDate}</Chip>
                                         <Chip>{agendaItem.reference}</Chip>
                                         <Chip>{agendaItem.itemStatus}</Chip>
@@ -159,7 +159,7 @@ const SearchResults = async ({query}:{query: string}) => {
                                     </div>
                                 </div>
                                 <div className="prose">
-                                    <p><Link target="_blank" href={`https://secure.toronto.ca/council/agenda-item.do?item=${agendaItem.reference}`} >
+                                    <p><Link target="_blank" className="inline-block break-words w-full" href={`https://secure.toronto.ca/council/agenda-item.do?item=${agendaItem.reference}`} >
                                         https://secure.toronto.ca/council/agenda-item.do?item={agendaItem.reference}
                                     </Link></p>
                                 </div>
