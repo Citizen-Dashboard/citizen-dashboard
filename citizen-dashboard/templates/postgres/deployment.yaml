@@ -48,3 +48,7 @@ spec:
         - name: postgres-config
           configMap:
             name: citizen-dashboard-postgres-init
+  resources:
+    requests:
+      memory: "1G"
+      cpu: "1"

@@ -1,0 +1,39 @@
+# .github/workflows/auto-create-pr.yml
+
+name: Auto Create Pull Request
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+      - '**/main'
+      - '**/master'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Automated PR: Changes from branch `${{ github.ref_name || github.event.ref | replace('refs/heads/', '') }}`"
+          branch: ${{ github.ref_name || github.event.ref | replace('refs/heads/', '') }}
+          title: "Automated PR: Updates from `${{ github.ref_name || github.event.ref | replace('refs/heads/', '') }}`"
+          body: |
+            This PR was automatically generated from branch `${{ github.ref_name || github.event.ref | replace('refs/heads/', '') }}`.
+            
+            Please review the changes and merge if everything looks good.
+          base: main
+          draft: false

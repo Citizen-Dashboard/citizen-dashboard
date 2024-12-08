@@ -53,3 +53,7 @@ spec:
         - name: pgpass-volume
           secret:
             secretName: citizen-dashboard-pgpass
+  resources:
+    requests:
+      memory: "1G"
+      cpu: "1"

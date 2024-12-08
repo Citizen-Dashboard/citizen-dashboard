@@ -25,3 +25,7 @@ spec:
             - containerPort: {{ .Values.dataFetcher.containerPort }}
       imagePullSecrets:
         - name: ghcr-secret
+  resources:
+    requests:
+      memory: "1G"
+      cpu: "1"
