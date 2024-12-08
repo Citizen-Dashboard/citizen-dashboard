@@ -17,6 +17,7 @@ fastparquet = "^2024.5.0"
 pyjson = "^1.4.1"
 ipdb = "^0.13.13"
 flask = "^3.0.3"
+gunicorn = "^23.0.0"
 
 [tool.poetry.scripts]
 py-version = "python --version"

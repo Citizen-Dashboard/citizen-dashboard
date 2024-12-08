@@ -23,6 +23,15 @@ spec:
           imagePullPolicy: {{ .Values.images.dataFetcher.pullPolicy }}
           ports:
             - containerPort: {{ .Values.dataFetcher.containerPort }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.dataFetcher.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
       imagePullSecrets:
         - name: ghcr-secret
   resources:
