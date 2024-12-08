@@ -5,20 +5,27 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from pydantic import BaseModel, Field
-
+import os
+import json
 from dotenv import load_dotenv
+load_dotenv()
+print("*** ",os.environ.get("log_level"))
+
 from typing import List
 
-from app_logging.logger import File_Console_Logger
+# from app_logging.logger import File_Console_Logger
 
-logger = File_Console_Logger(__name__)
+# logger = File_Console_Logger(__name__)
 
-load_dotenv()
-promptTemplate = """With the following piece of topic, generate a summary of the content less than 100 words. You must be impartial, non-judgemental and gender neutral. Use only the information provided in the context.
+promptTemplate = """You will be given a topic and set of recommendations and decisions from a meeting. Generate a synopsis of the meeting and the recommendations or decisions made in less than 150 words. You must be impartial, non-judgemental and gender neutral. Use only the information provided in the context.
 Your response should strictly be in JSON format shown in the example.
 {example}
 ---
 {topic}
+
+{recommendations}
+
+{decision}
 """ 
 # gpt_4_mini_llm = ChatOpenAI(model="gpt-4o-mini")
 gpt_3_5_llm = ChatOpenAI(model="gpt-3.5-turbo-0125")
@@ -43,12 +50,18 @@ class Summaizer:
         self.json_parser = JsonOutputParser(pydantic_object=Summary)
         self.str_parser = StrOutputParser()
         self.prompt = PromptTemplate.from_template(promptTemplate)
-        self.rag_chain = self.prompt | gpt_3_5_llm | self.json_parser
-        self.example = "{\"summary\": \"This is a concise summary of the provided context that is impartial, non-judgmental and gender neutral.\"}"
+        self.rag_chain = self.prompt | gpt_3_5_llm
+        self.example = \
+        """{"summary":"this is a concise summary of the provided topic including recommendations and decisions"}"""
     
-    def summarizeTextContent(self, TextContent):
-        response = self.rag_chain.invoke({"topic":TextContent, "example":self.example})
-        logger.debug(response)
+    def summarizeTextContent(self, topic, recommendations, decision):
+        response = self.rag_chain.invoke({"topic":topic, "recommendations":recommendations, "decision":decision, "example":self.example})
+        try:
+            response = self.json_parser.invoke(response)
+        except Exception as e:
+            response =self.str_parser.invoke(response)
+
+        # logger.debug(response)
         return response
 
 

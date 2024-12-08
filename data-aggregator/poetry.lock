@@ -2009,4 +2009,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "1ee4024f4f7196c9f42db752eb8a319f7f8f7368d49ba057b1bf9858d65bc858"
+content-hash = "86f9787ed45e5001608e539c8fcc385e8ee75b6fffacdb1543b96135af171ea9"

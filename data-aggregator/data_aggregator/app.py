@@ -8,6 +8,7 @@ print("*** ",os.environ.get("log_level"))
 from gen_ai.summarizer import Summaizer
 from datetime import datetime, timedelta
 import asyncio
+import time
 
 from agendaItemFetcher import adgendaItemFetcher
 from kafka.kafka_producer import kafka_producer
@@ -15,7 +16,7 @@ from kafka.kafka_producer import kafka_producer
 from app_logging.logger import File_Console_Logger
 
 logger = File_Console_Logger(__name__)
-
+delay_in_seconds = 60/500 #RateLimitPerMinute=500
 
 
 async def main():
@@ -46,20 +47,34 @@ async def main():
     # agendaItem_kafka_producer.produce(message=random_item, id=random_item.get("id"))
     
     for item in agendaItemsJSON:
-        # Combine title and summary for better context
-        text_to_summarize = f"{item.get('agendaItemTitle', '')} {item.get('agendaItemSummary', '')}"
         try:
-            summary_result = summarizer.summarizeTextContent(text_to_summarize)
+            summary_result = getItemSummary(summarizer, item)
             item['ai_summary'] = summary_result.get('summary')
-            logger.debug(f"Generated summary for agenda item {item.get('id')}: {item.get('ai_summary')}")
             agendaItem_kafka_producer.produce( message=item, id=item.get("id"))
+            logger.debug(f"Generated agenda item {item.get('id')}: {item.get('ai_summary')}")
         except Exception as e:
             logger.error(f"Failed to produce agenda item {item.get('id')}: {str(e)}")
+        
+        time.sleep(delay_in_seconds)
     
     logger.info('Finished generating summaries')
     
     await agendaItem_kafka_producer.flush()
 
+
+def getItemSummary(summarizer, item):
+    summary_result = ""
+    try:
+        summary_result = summarizer.summarizeTextContent(
+            topic=f"{item.get('agendaItemTitle','')}",
+            recommendations=f"{item.get('agendaItemRecommendation','')}",
+            decision=f"{item.get('decisionRecommendations','')}\n\n{item.get('decisionAdvice','')}",
+            )
+        logger.debug(f"Generated summary for agenda item {item.get('id')}: {item.get('ai_summary')}")
+    except Exception as e:
+        logger.error(f"Failed to summarize agenda item {item.get('id')}: {str(e)}")
+    finally:
+        return summary_result
 
 
 if __name__ == "__main__":
