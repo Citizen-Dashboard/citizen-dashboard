@@ -64,7 +64,7 @@ const SearchBar = () => {
             <input
               type="text"
               placeholder="Search"
-              className="input bg-base-300 join-item w-4/5 md:w-3/4 lg:w-1/2"
+              className="input bg-base-300 join-item w-4/5 md:w-3/4 lg:w-1/2 dark:border-neutral-100"
               onChange={handleSearchQuery}
               defaultValue={searchParams.get("query")?.toString()}
             />

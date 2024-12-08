@@ -32,7 +32,7 @@ export default async function Home(
   const query = searchParams?.query|| '';
 
   return (
-    <div className="bg-neutral-100">
+    <div className="bg-base-200 min-h-full">
       <AppBar />
       <SearchBar />
       {query!=="" &&

@@ -132,9 +132,9 @@ const SearchResults = async ({query}:{query: string}) => {
                 {results.length>0 && total > 1 && <div>{(limit>total)?`Found ${total} matches.`:`Showing top ${limit} results.`}</div>}
                 {results.length>0 && results.map((agendaItem) => (
                     <div key={agendaItem.reference} className="flex flex-col w-full p-2">
-                        <div className="card w-full bg-base-100 shadow-xl">
+                        <div className="card w-full bg-base-100 text-base-full shadow-xl">
                             <div className="card-body">
-                                <div className="prose w-full">
+                                <div className="prose w-full bg-base-100 text-base-full">
                                     <h2>{agendaItem.title}</h2>
                                     <div className="flex flex-row gap-3 items-start flex-wrap">
                                         <Chip>{agendaItem.meetingDate}</Chip>
@@ -147,7 +147,7 @@ const SearchResults = async ({query}:{query: string}) => {
                                 </div>
                                 
                                 <div className="prose">
-                                    <div className="collapse collapse-arrow bg-base-200">
+                                    <div className="collapse collapse-arrow bg-base-200 text-base-100 dark:border dark:border-neutral-50">
                                         <input type="checkbox" name={`${agendaItem.reference}_details`} className="accordion-toggle" />
                                         <div className="collapse-title text-m font-m underline">Details</div>
                                         <div className="collapse-content">
