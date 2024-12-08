@@ -48,18 +48,13 @@ jobs:
         id: set_tags
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          REPO=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           COMPONENT=${{ matrix.component }}
           SHA=${{ github.sha }}
 
           echo "OWNER=${OWNER}" >> $GITHUB_ENV
-          echo "REPO=${REPO}" >> $GITHUB_ENV
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
 
-          if [[ "${{ github.event_name }}" == "push" && ("${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master") ]]; then
-            echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:latest ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
-          else
-            echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:${SHA}" >> $GITHUB_ENV
-          fi
+          echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:${BRANCH}-${SHA}" >> $GITHUB_ENV
 
       - name: Build Docker Image
         uses: docker/build-push-action@v6.9.0
