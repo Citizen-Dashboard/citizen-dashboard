@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 import psycopg2
 from elasticsearch import Elasticsearch, helpers
 import os
-import traceback
 
 app = Flask(__name__)
 
@@ -38,7 +37,6 @@ def fetch_data_from_postgres():
         return [dict(zip(columns, row)) for row in rows]
     except Exception as e:
         app.logger.error(f"Error fetching data from PostgreSQL: {e}")
-        app.logger.error(traceback.format_exc())
         raise
 
 def index_data_in_elasticsearch(data):
@@ -58,7 +56,6 @@ def index_data_in_elasticsearch(data):
         app.logger.info(f"Successfully indexed {len(data)} records into Elasticsearch.")
     except Exception as e:
         app.logger.error(f"Error indexing data into Elasticsearch: {e}")
-        app.logger.error(traceback.format_exc())
         raise
 
 @app.route('/ingest', methods=['POST'])
@@ -74,7 +71,6 @@ def ingest_data():
         return jsonify({"message": "Data successfully ingested.", "record_count": len(data)})
     except Exception as e:
         app.logger.error(f"Error during ingestion: {e}")
-        app.logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 @app.route('/healthz', methods=['GET'])
