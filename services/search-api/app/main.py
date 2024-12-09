@@ -5,13 +5,14 @@ import os
 app = Flask(__name__)
 
 # Elasticsearch configuration
-ES_HOST = os.getenv("ES_HOST", "http://localhost:9200")
+ES_HOST = os.getenv("ES_HOST", "localhost")
+ES_PORT = os.getenv("ES_PORT", "9200")
 
-es = Elasticsearch([ES_HOST])
 
 @app.route('/search', methods=['GET'])
 def search_data():
     """Search data in Elasticsearch."""
+    es = Elasticsearch(f"http://{ES_HOST}:{ES_PORT}")
     query = request.args.get('query', '')
     if not query:
         return jsonify({"error": "Query parameter is required."}), 400
