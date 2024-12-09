@@ -18,8 +18,8 @@ data:
   DATA_STORE_PORT: "{{ .Values.dataStore.servicePort }}"
 
   # ElasticSearch Configurations
-  ELASTICSEARCH_HOST: {{ include "citizen-dashboard.name" . }}-elasticsearch
-  ELASTICSEARCH_PORT: "{{ .Values.elasticsearch.servicePort }}"
+  ES_HOST: {{ include "citizen-dashboard.name" . }}-elasticsearch
+  ES_PORT: "{{ .Values.elasticsearch.servicePort }}"
 
   # Search API Configurations
   SEARCH_API_HOST: {{ include "citizen-dashboard.name" . }}-search-api

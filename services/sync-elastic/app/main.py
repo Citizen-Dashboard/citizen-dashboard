@@ -13,7 +13,8 @@ DB_USER = os.getenv("DB_USER", "your_db_user")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "your_db_password")
 
 # Elasticsearch configuration
-ES_HOST = os.getenv("ES_HOST", "http://localhost:9200")
+ES_HOST = os.getenv("ES_HOST", "localhost")
+ES_PORT = os.getenv("ES_PORT", "9200")
 
 def fetch_data_from_postgres():
     """Fetch data from PostgreSQL."""
@@ -43,7 +44,7 @@ def index_data_in_elasticsearch(data):
     """Index data into Elasticsearch."""
     app.logger.info("Connecting to Elasticsearch.")
     try:
-        es = Elasticsearch([ES_HOST])
+        es = Elasticsearch(f"http://{ES_HOST}:{ES_PORT}")
         app.logger.info("Preparing data for bulk indexing.")
         actions = [
             {
