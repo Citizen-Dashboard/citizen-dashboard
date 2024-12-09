@@ -9,6 +9,16 @@ images:
     tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
     pullPolicy: IfNotPresent
 
+  syncElastic:
+    repository: ghcr.io/citizen-dashboard/sync-elastic
+    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead
+    pullPolicy: IfNotPresent
+
+  searchApi:
+    repository: ghcr.io/citizen-dashboard/search-api
+    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead
+    pullPolicy: IfNotPresent
+
   postgres:
     repository: postgres
     tag: 17.2
@@ -17,6 +27,11 @@ images:
   pgadmin:
     repository: dpage/pgadmin4
     tag: latest
+    pullPolicy: IfNotPresent
+
+  elasticsearch:
+    repository: docker.elastic.co/elasticsearch/elasticsearch
+    tag: 8.10.2
     pullPolicy: IfNotPresent
 
 imagePullSecrets:
@@ -31,6 +46,18 @@ dataFetcher:
 dataStore:
   schedule: "0 0 * * *"
   containerPort: 5000
+
+syncElastic:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
+
+searchApi:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
 
 postgres:
   containerPort: 5432
@@ -49,12 +76,6 @@ pgadmin:
   serviceType: ClusterIP
   email: admin@example.com
 
-secrets:
-  dataFetcher:
-    apiKey: 'test-api-key'
-  dataStore:
-    dbPassword: 'test-db-password'
-  postgres:
-    password: 'test_password'
-  pgadmin:
-    password: 'admin'
+elasticsearch:
+  servicePort: 9200
+  serviceType: ClusterIP

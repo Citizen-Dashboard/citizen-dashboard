@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        component: [data-fetcher, data-store]
+        component: [data-fetcher, data-store, sync-elastic, search-api]
 
     steps:
       - name: Checkout Repository
@@ -50,10 +50,9 @@ jobs:
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           COMPONENT=${{ matrix.component }}
           SHA=${{ github.sha }}
+          BRANCH=$(echo "${{ github.ref_name }}" | tr '/' '-')
 
           echo "OWNER=${OWNER}" >> $GITHUB_ENV
-          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
-
           echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:${BRANCH}-${SHA}" >> $GITHUB_ENV
 
       - name: Build Docker Image

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "citizen-dashboard.name" . }}-sync-elastic
+  labels:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: sync-elastic
+spec:
+  replicas: {{ .Values.sync-elastic.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: sync-elastic
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: sync-elastic
+    spec:
+      containers:
+        - name: sync-elastic
+          image: "{{ .Values.images.sync-elastic.repository }}:{{ .Values.images.sync-elastic.tag }}"
+          imagePullPolicy: {{ .Values.images.sync-elastic.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.sync-elastic.containerPort }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.sync-elastic.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+      imagePullSecrets:
+        - name: ghcr-secret
