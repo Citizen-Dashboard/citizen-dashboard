@@ -62,8 +62,9 @@ const SearchBar = () => {
       <div className="flex flex-row items-center">
         <div className="join px-4 py-8 md:p-10 w-screen justify-center">
             <input
-              type="text"
+              type="search"
               placeholder="Search"
+              name="query"
               className="input input-bordered bg-base-100 join-item w-4/5 md:w-3/4 lg:w-1/2"
               onChange={handleSearchQuery}
               defaultValue={searchParams.get("query")?.toString()}
