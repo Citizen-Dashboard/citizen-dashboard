@@ -1,22 +1,22 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f           
+    tag: b896e0d35ba4ddc4e4ac32a8ebfbc2befa8a9ccf            
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f           
+    tag: b896e0d35ba4ddc4e4ac32a8ebfbc2befa8a9ccf            
     pullPolicy: IfNotPresent
 
   syncElastic:
     repository: ghcr.io/citizen-dashboard/sync-elastic
-    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f 
+    tag: b896e0d35ba4ddc4e4ac32a8ebfbc2befa8a9ccf  
     pullPolicy: IfNotPresent
 
   searchApi:
     repository: ghcr.io/citizen-dashboard/search-api
-    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f 
+    tag: b896e0d35ba4ddc4e4ac32a8ebfbc2befa8a9ccf  
     pullPolicy: IfNotPresent
 
   postgres:
