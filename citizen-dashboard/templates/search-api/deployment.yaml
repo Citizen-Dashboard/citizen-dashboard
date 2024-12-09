@@ -35,5 +35,10 @@ spec:
             timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: {{ include "citizen-dashboard.name" . }}-config
+            - secretRef:
+                name: {{ include "citizen-dashboard.name" . }}-secrets
       imagePullSecrets:
         - name: ghcr-secret
