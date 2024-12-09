@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: sync-elastic
 spec:
-  replicas: {{ .Values.sync-elastic.replicas }}
+  replicas: {{ .Values.syncElastic.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
@@ -22,14 +22,14 @@ spec:
     spec:
       containers:
         - name: sync-elastic
-          image: "{{ .Values.images.sync-elastic.repository }}:{{ .Values.images.sync-elastic.tag }}"
-          imagePullPolicy: {{ .Values.images.sync-elastic.pullPolicy }}
+          image: "{{ .Values.images.syncElastic.repository }}:{{ .Values.images.syncElastic.tag }}"
+          imagePullPolicy: {{ .Values.images.syncElastic.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.sync-elastic.containerPort }}
+            - containerPort: {{ .Values.syncElastic.containerPort }}
           readinessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.sync-elastic.containerPort }}
+              port: {{ .Values.syncElastic.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

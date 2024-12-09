@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: search-api
 spec:
-  replicas: {{ .Values.search-api.replicas }}
+  replicas: {{ .Values.searchApi.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
@@ -22,14 +22,14 @@ spec:
     spec:
       containers:
         - name: search-api
-          image: "{{ .Values.images.search-api.repository }}:{{ .Values.images.search-api.tag }}"
-          imagePullPolicy: {{ .Values.images.search-api.pullPolicy }}
+          image: "{{ .Values.images.searchApi.repository }}:{{ .Values.images.searchApi.tag }}"
+          imagePullPolicy: {{ .Values.images.searchApi.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.search-api.containerPort }}
+            - containerPort: {{ .Values.searchApi.containerPort }}
           readinessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.search-api.containerPort }}
+              port: {{ .Values.searchApi.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 1

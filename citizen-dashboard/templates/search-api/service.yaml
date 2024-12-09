@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: search-api
 spec:
-  type: {{ .Values.search-api.serviceType }}
+  type: {{ .Values.searchApi.serviceType }}
   ports:
-    - port: {{ .Values.search-api.servicePort }}
-      targetPort: {{ .Values.search-api.containerPort }}
+    - port: {{ .Values.searchApi.servicePort }}
+      targetPort: {{ .Values.searchApi.containerPort }}
       protocol: TCP
   selector:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}

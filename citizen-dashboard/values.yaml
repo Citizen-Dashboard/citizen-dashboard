@@ -1,22 +1,22 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
+    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f           
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
+    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f           
     pullPolicy: IfNotPresent
 
   syncElastic:
     repository: ghcr.io/citizen-dashboard/sync-elastic
-    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead
+    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f 
     pullPolicy: IfNotPresent
 
   searchApi:
     repository: ghcr.io/citizen-dashboard/search-api
-    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead
+    tag: 4223b8abe0bd344260d93db1d15f2da129603f9f 
     pullPolicy: IfNotPresent
 
   postgres:
@@ -79,3 +79,13 @@ pgadmin:
 elasticsearch:
   servicePort: 9200
   serviceType: ClusterIP
+
+secrets:
+  dataFetcher:
+    apiKey: 'test-api-key'
+  dataStore:
+    dbPassword: 'test-db-password'
+  postgres:
+    password: 'test_password'
+  pgadmin:
+    password: 'admin'

@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: sync-elastic
 spec:
-  type: {{ .Values.sync-elastic.serviceType }}
+  type: {{ .Values.syncElastic.serviceType }}
   ports:
-    - port: {{ .Values.sync-elastic.servicePort }}
-      targetPort: {{ .Values.sync-elastic.containerPort }}
+    - port: {{ .Values.syncElastic.servicePort }}
+      targetPort: {{ .Values.syncElastic.containerPort }}
       protocol: TCP
   selector:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
