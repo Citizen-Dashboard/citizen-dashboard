@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import psycopg2
 from elasticsearch import Elasticsearch, helpers
 import os
+import traceback
 
 app = Flask(__name__)
 
