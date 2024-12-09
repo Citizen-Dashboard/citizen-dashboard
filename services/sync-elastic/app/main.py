@@ -8,9 +8,9 @@ app = Flask(__name__)
 # Database configuration
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "your_db_name")
-DB_USER = os.getenv("DB_USER", "your_db_user")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "your_db_password")
+DB_NAME = os.getenv("DB_NAME", "citizen_dashboard")
+DB_USER = os.getenv("DB_USER", "your_username")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "test_password")
 
 # Elasticsearch configuration
 ES_HOST = os.getenv("ES_HOST", "localhost")
@@ -72,7 +72,9 @@ def ingest_data():
         return jsonify({"message": "Data successfully ingested.", "record_count": len(data)})
     except Exception as e:
         app.logger.error(f"Error during ingestion: {e}")
-        return jsonify({"error": str(e)}), 500
+        stack_trace = traceback.format_exc(limit=3)
+        app.logger.error(f"Stack trace: {stack_trace}")
+        return jsonify({"error": str(e), "stack_trace": stack_trace}), 500
 
 @app.route('/healthz', methods=['GET'])
 def healthz():
