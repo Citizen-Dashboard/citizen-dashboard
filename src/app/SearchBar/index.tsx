@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 
@@ -22,6 +22,7 @@ const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const searchParams = useSearchParams();
     const { push } = useRouter();
+    const submitBtnRef = useRef<HTMLButtonElement>(null);
     const pathname = usePathname();
 
     /**
@@ -33,7 +34,6 @@ const SearchBar = () => {
     const handleSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchQuery(value);
-      console.log("Search term:", value);
     };
 
     /**
@@ -64,11 +64,16 @@ const SearchBar = () => {
             <input
               type="text"
               placeholder="Search"
-              className="input bg-base-300 join-item w-4/5 md:w-3/4 lg:w-1/2 dark:border-neutral-100"
+              className="input input-bordered bg-base-100 join-item w-4/5 md:w-3/4 lg:w-1/2"
               onChange={handleSearchQuery}
               defaultValue={searchParams.get("query")?.toString()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  submitBtnRef.current?.focus();
+                }
+              }}
             />
-            <button className="btn btn-primary join-item" type="submit">Search</button>
+            <button ref={submitBtnRef} className="btn btn-primary join-item" type="submit">Search</button>
           </div>
       </div>
     </form>

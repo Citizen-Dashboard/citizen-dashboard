@@ -55,7 +55,7 @@ function formatDate(timestamp:Date) {
 const highlightInfoToJSX = (highlightInfo:agendaItemHighlightInfo[])=>{
     const highlightJSX = highlightInfo.map((textInfo, index)=>{
         if(textInfo.highlight){
-            return <b key={index}>{textInfo.text}</b>
+            return <span className='inline-block font-bold text-lg' key={index}>{textInfo.text}</span>
         }
         else {
             return <>{textInfo.text}</>
@@ -129,12 +129,12 @@ const SearchResults = async ({query}:{query: string}) => {
     return (
         <div className="flex flex-col p-4 md:p-10">
             <div className="flex flex-col w-full">
-                {results.length>0 && total > 1 && <div>{(limit>total)?`Found ${total} matches.`:`Showing top ${limit} results.`}</div>}
+                {results.length>0 && total > 1 && <div className="text-base-content">{(limit>total)?`Found ${total} matches.`:`Showing top ${limit} results.`}</div>}
                 {results.length>0 && results.map((agendaItem) => (
                     <div key={agendaItem.reference} className="flex flex-col w-full p-2">
                         <div className="card w-full bg-base-100 text-base-full shadow-xl">
                             <div className="card-body">
-                                <div className="prose w-full bg-base-100 text-base-full">
+                                <div className="prose w-full bg-base-100">
                                     <h2>{agendaItem.title}</h2>
                                     <div className="flex flex-row gap-3 items-start flex-wrap">
                                         <Chip>{agendaItem.meetingDate}</Chip>
@@ -147,7 +147,7 @@ const SearchResults = async ({query}:{query: string}) => {
                                 </div>
                                 
                                 <div className="prose">
-                                    <div className="collapse collapse-arrow bg-base-200 text-base-900 dark:border dark:border-neutral-50">
+                                    <div className="collapse collapse-arrow bg-base-200">
                                         <input type="checkbox" name={`${agendaItem.reference}_details`} className="accordion-toggle" />
                                         <div className="collapse-title text-m font-m underline">Details</div>
                                         <div className="collapse-content">
@@ -159,7 +159,7 @@ const SearchResults = async ({query}:{query: string}) => {
                                     </div>
                                 </div>
                                 <div className="prose">
-                                    <p><Link target="_blank" className="inline-block break-words w-full" href={`https://secure.toronto.ca/council/agenda-item.do?item=${agendaItem.reference}`} >
+                                    <p><Link target="_blank" className="inline-block break-words w-full text-blue-500" href={`https://secure.toronto.ca/council/agenda-item.do?item=${agendaItem.reference}`} >
                                         https://secure.toronto.ca/council/agenda-item.do?item={agendaItem.reference}
                                     </Link></p>
                                 </div>

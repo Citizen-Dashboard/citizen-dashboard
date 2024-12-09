@@ -18,6 +18,7 @@ export default class ElasticSearchClient {
     static getSearchQuery(term) {
         return {
             "query":{
+                "size":30,
                 "multi_match": {
                     "query": term,
                     "type": "best_fields", 

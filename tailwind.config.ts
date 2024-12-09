@@ -9,10 +9,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
       typography: {
         DEFAULT: {
           css: {
@@ -24,7 +20,8 @@ const config: Config = {
   },
   plugins: [typography, daisyui],
   daisyui: {
-    themes: ["light", "dark"]
+    themes: ["light", "night"],
+    darkTheme: "night",
   }
 };
 export default config;
