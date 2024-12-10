@@ -22,10 +22,18 @@ spec:
     spec:
       containers:
         - name: elasticsearch
-          image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+          image: "{{ .Values.images.elasticsearch.repository }}:{{ .Values.images.elasticsearch.tag }}"
           ports:
             - containerPort: 9200
             - containerPort: 9300
           env:
             - name: discovery.type
               value: single-node
+          volumeMounts:
+            - name: elasticsearch-config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+      volumes:
+        - name: elasticsearch-config
+          configMap:
+            name: {{ include "citizen-dashboard.name" . }}-elasticsearch-config

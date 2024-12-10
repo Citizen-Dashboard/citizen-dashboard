@@ -8,10 +8,10 @@ metadata:
     app.kubernetes.io/component: elasticsearch
 spec:
   ports:
-    - port: 9200
-      targetPort: 9200
+    - port: {{ .Values.elasticsearch.servicePort }}
+      targetPort: {{ .Values.elasticsearch.servicePort }}
   selector:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: elasticsearch
-  type: ClusterIP
+  type: {{ .Values.elasticsearch.serviceType }}

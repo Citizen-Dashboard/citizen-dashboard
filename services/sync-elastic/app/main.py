@@ -44,8 +44,10 @@ def fetch_data_from_postgres():
 def index_data_in_elasticsearch(data):
     """Index data into Elasticsearch."""
     app.logger.info("Connecting to Elasticsearch.")
+    es_url = f"http://{ES_HOST}:{ES_PORT}"
     try:
-        es = Elasticsearch(f"http://{ES_HOST}:{ES_PORT}")
+        app.logger.info(f"Connecting to ElasticSearch at {url}...")
+        es = Elasticsearch(url)
         app.logger.info("Preparing data for bulk indexing.")
         actions = [
             {

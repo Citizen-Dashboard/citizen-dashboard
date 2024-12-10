@@ -1,22 +1,22 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: becea53203d9b3ca8c94ba2a0194a38f019dc049                    
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f                       
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: becea53203d9b3ca8c94ba2a0194a38f019dc049                    
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f                       
     pullPolicy: IfNotPresent
 
   syncElastic:
     repository: ghcr.io/citizen-dashboard/sync-elastic
-    tag: becea53203d9b3ca8c94ba2a0194a38f019dc049          
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f             
     pullPolicy: IfNotPresent
 
   searchApi:
     repository: ghcr.io/citizen-dashboard/search-api
-    tag: becea53203d9b3ca8c94ba2a0194a38f019dc049          
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f             
     pullPolicy: IfNotPresent
 
   postgres:
@@ -31,9 +31,9 @@ images:
 
   elasticsearch:
     repository: docker.elastic.co/elasticsearch/elasticsearch
-    tag: 8.10.2
+    tag: 8.16.1
     pullPolicy: IfNotPresent
-
+    
 imagePullSecrets:
   name: ghcr-secret
 
@@ -79,6 +79,10 @@ pgadmin:
 elasticsearch:
   servicePort: 9200
   serviceType: ClusterIP
+  configMapRef:
+      elasticsearch.yml: |
+        xpack.security.enabled: false
+        xpack.security.http.ssl.enabled: false
 
 secrets:
   dataFetcher:
