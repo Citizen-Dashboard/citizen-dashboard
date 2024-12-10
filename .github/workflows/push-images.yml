@@ -48,7 +48,8 @@ jobs:
         id: set_env_vars
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-
+          echo "OWNER=${OWNER}" >> $GITHUB_ENV
+          
       - name: Build Docker Image
         uses: docker/build-push-action@v6.9.0
         with:
