@@ -3,6 +3,7 @@ import psycopg2
 from elasticsearch import Elasticsearch, helpers
 import os
 import traceback
+import logging
 
 app = Flask(__name__)
 
@@ -85,5 +86,8 @@ def healthz():
     return "OK", 200
 
 if __name__ == '__main__':
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
     app.logger.info("Starting Flask application.")
     app.run(host='0.0.0.0', port=5000)
