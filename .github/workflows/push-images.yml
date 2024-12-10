@@ -44,17 +44,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN for authentication
 
-      - name: Set Image Tags
-        id: set_tags
-        run: |
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          COMPONENT=${{ matrix.component }}
-          SHA=${{ github.sha }}
-          BRANCH=$(echo "${{ github.ref_name }}" | tr '/' '-')
-
-          echo "OWNER=${OWNER}" >> $GITHUB_ENV
-          echo "TAGS=ghcr.io/${OWNER}/${COMPONENT}:${BRANCH}-${SHA}" >> $GITHUB_ENV
-
       - name: Build Docker Image
         uses: docker/build-push-action@v6.9.0
         with:
