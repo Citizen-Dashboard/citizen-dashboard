@@ -62,7 +62,7 @@ jobs:
           push: true
           load: true
           tags: |
-            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.sha }}
+            ghcr.io/${{ env.OWNER }}/${{ matrix.component }}:${{ github.ref_name }}-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

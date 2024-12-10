@@ -1,63 +1,200 @@
+
 # Citizen Dashboard
 
-## Scraper
-Citizen Dashboard makes involvement in civic discourse engaging, intuitive and fun! Currently, only the data acquisition utility is functional. To begin, simply run:
+The Citizen Dashboard is a Kubernetes-based platform that provides a suite of services for managing data, search, and synchronization. These services are containerized, orchestrated via Helm and Minikube, and designed for scalable deployments.
 
-```citizen-dashboard-backend/scripts/data_fetcher.py```
+---
 
-What this does:
-- Pull voting record data for Toronto City Council (`citizen-dashboard-backend/scripts/fetch_voting_records.py`).
-- Using voting record data, create list of unique agenda items.
-- Pull and parse HTML data by feeding unique agenda item ID to City Council website's API with random wait intervals in between requests (there may be several parsing strategies to choose from, but they should all be located under the directory `citizen-dashboard-backend/scripts/scraper`).
+## Services Overview
 
-The script should generate two files in the `data` directory:
-- `combined_voting_data.parquet` - Contains the combined voting data for City Council.
-- `items_info.parquet` - Contains parsed agenda item information from the City Council website.
+The following services make up the Citizen Dashboard:
 
-## Setting up Docker Environment
-1. Initialize docker swarm. Set advertise address ```docker swarm init --advertise-addr <eth0 ip addr>```
-2. Create secret for SQL database
+| **Service Name**                  | **Description**                               | **Port(s)** | **API Endpoints**                 |
+|-----------------------------------|-----------------------------------------------|-------------|------------------------------------|
+| `citizen-dashboard-data-fetcher`  | Fetches data from external APIs.              | 5000/TCP    | `/fetch-data`, `/healthz`         |
+| `citizen-dashboard-data-store`    | Manages and stores data fetched or processed. | 8000/TCP    | `/store-data`, `/healthz`         |
+| `citizen-dashboard-elasticsearch` | Full-text search and indexing service.        | 9200/TCP    | N/A                                |
+| `citizen-dashboard-postgres`      | Database for structured data storage.         | 5432/TCP    | N/A                                |
+| `citizen-dashboard-search-api`    | Handles search queries using Elasticsearch.   | 5000/TCP    | `/search`, `/healthz`             |
+| `citizen-dashboard-sync-elastic`  | Syncs data to Elasticsearch.                  | 5000/TCP    | `/ingest`, `/healthz`             |
+| `pgadmin`                         | Web-based database administration tool.       | 8080/TCP    | Web Interface                      |
 
+---
 
-## Environments
-Citizen-Dashboard project supports deployment to a k8s cluster. We currently have one such cluster running for production (hosted in DigitalOcean). For local development/testing/experimintation project supports deployment onto a local minikube cluster.
+## API Documentation
 
-1. **Deploy directly to production cluster** - currently configured for any push to the main branch. Once changes are committed, Github action will pick it up, build and deploy to k8s cluster in DigitalOcean
-> [!CAUTION] 
-> There is currently no proper gatekeeping on this procedure, if pushed code has breaking changes, production is down
+### **Data Fetcher Service**
+#### Endpoint: `/fetch-data`
+- **Method**: `GET`
+- **Description**: Fetches data from external APIs between the specified date range.
+- **Parameters**:
+  - `from_date` (required): Start date (`YYYY-MM-DDTHH:MM:SS.sssZ` format).
+  - `to_date` (required): End date (`YYYY-MM-DDTHH:MM:SS.sssZ` format).
+- **Response**:
+  - **200 OK**: JSON array of fetched records.
+  - **400 Bad Request**: Invalid or missing parameters.
+  - **500 Internal Server Error**: Server error while fetching data.
 
-2. **Deploy to a local environment** - requires some setting up, see next section for details
+#### Health Check Endpoint: `/healthz`
+- **Method**: `GET`
+- **Response**: `200 OK` if the service is healthy.
 
-## Setting up local developement environment
-> [!NOTE] 
-> We are all developing on personal laptops, each with different OS type and/or version. As much as we are trying to use tools that are as standard as possible, discrepancies can and will pop up. If you enounter a problem please share.
+---
+
+### **Data Store Service**
+#### Endpoint: `/store-data`
+- **Method**: `POST`
+- **Description**: Fetches data from the `Data Fetcher` service and stores it in PostgreSQL.
+- **Request Body**:
+  - `from_date` (required): Start date (`YYYY-MM-DDTHH:MM:SS.sssZ` format).
+  - `to_date` (required): End date (`YYYY-MM-DDTHH:MM:SS.sssZ` format).
+- **Response**:
+  - **200 OK**: Data successfully stored.
+  - **400 Bad Request**: Invalid or missing parameters.
+  - **500 Internal Server Error**: Error in fetching or storing data.
+
+#### Health Check Endpoint: `/healthz`
+- **Method**: `GET`
+- **Response**: `200 OK` if the service is healthy.
+
+---
+
+### **Search API Service**
+#### Endpoint: `/search`
+- **Method**: `GET`
+- **Description**: Queries Elasticsearch for search results.
+- **Parameters**:
+  - `query` (required): The search term.
+- **Response**:
+  - **200 OK**: JSON array of search results.
+  - **400 Bad Request**: Missing `query` parameter.
+  - **500 Internal Server Error**: Error in querying Elasticsearch.
+
+#### Health Check Endpoint: `/healthz`
+- **Method**: `GET`
+- **Response**: `200 OK` if the service is healthy.
+
+---
+
+### **Sync Elasticsearch Service**
+#### Endpoint: `/ingest`
+- **Method**: `POST`
+- **Description**: Syncs data from PostgreSQL to Elasticsearch.
+- **Response**:
+  - **200 OK**: Data successfully ingested.
+  - **500 Internal Server Error**: Error in syncing data.
+
+#### Health Check Endpoint: `/healthz`
+- **Method**: `GET`
+- **Response**: `200 OK` if the service is healthy.
+
+---
+
+## Installation and Setup
 
 ### Prerequisites
-1. **Python** - local deploy procedures do not require fancy new python versions - let's agree on '>3.9' :smile:
-2. **Docker** - docker deamon should be installed and running on your machine
-3. **[kubectl](https://kubernetes.io/docs/reference/kubectl/)** - any of the latest versions will do
-4. **[minikube](https://minikube.sigs.k8s.io/docs/)** - please lookup any guide on the web, there are a lot. If you are a mac (Apple silicon) user you can follow [this](https://devopscube.com/minikube-mac/) one
 
+#### **Minikube**
+Install Minikube:
+- **Windows**:
+  ```bash
+  choco install minikube
+  ```
+- **Ubuntu**:
+  ```bash
+  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+  sudo install minikube-linux-amd64 /usr/local/bin/minikube
+  ```
+- **macOS**:
+  ```bash
+  brew install minikube
+  ```
 
-### Delpoy locally
-Now we can move on to actually deploying the project
-1. Start your minukube by running ```minikube start```. At this point minikube will configure itself and spawn, and eventually register itself into a local k8s configuration file. If everything went well, you should now see your minikube cluster by invoking ```kubectl config get-contexts``` and see the minikube container running by calling ```docker ps```
+#### **Helm**
+Install Helm:
+- **Windows**:
+  ```bash
+  choco install kubernetes-helm
+  ```
+- **Ubuntu**:
+  ```bash
+  curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  ```
+- **macOS**:
+  ```bash
+  brew install helm
+  ```
 
-2. Now we need to define some environment variables. These are variables that configure infrastructure componenets inside the cluster ([kafka](https://kafka.apache.org/) and [postgres](https://www.postgresql.org/) and [dockerhub](https://hub.docker.com/)). Obiously, as this data is sensitive (credentials), we cannot add it in plain text to the repo, please ask project admins for it.
-```
-    POSTGRES_DB=***
-    POSTGRES_USER=***
-    POSTGRES_PASSWORD=***
-    DOCKER_USERNAME=***
-    DOCKER_PASSWORD=***
-```
+#### **Kubernetes CLI**
+Install `kubectl`:
+- **Windows**:
+  ```bash
+  choco install kubernetes-cli
+  ```
+- **Ubuntu**:
+  ```bash
+  sudo apt install kubectl
+  ```
+- **macOS**:
+  ```bash
+  brew install kubectl
+  ```
 
-3. Create a new namespace called citizen-dashboad in you minikube by running ```kubectl create namespace citizen-dashboard```
+---
 
-4. Deploy your local code to minikube by running ```./deployment/deploy_local.sh```
+### Setup Instructions
 
-> [!NOTE] 
-> When running this deployment for the first time on your machine, it could take a while as it builds our service images for the first time. The next time you run it should be quicker as some of the image layers are already cached locally
+1. **Start Minikube**:
+   ```bash
+   minikube start --driver=<driver_name>
+   ```
 
+2. **Create Namespace**:
+   ```bash
+   kubectl create namespace citizen-dashboard
+   ```
 
+3. **Add GHCR Secret**:
+   ```bash
+   kubectl create secret docker-registry ghcr-secret      --docker-server=ghcr.io      --docker-username=github_username      --docker-password=your_ghcr_token      --docker-email=github_email      --namespace=citizen-dashboard
+   ```
 
+4. **Deploy the Application**:
+   ```bash
+   ./deploy.sh
+   ```
+
+5. **Verify Deployment**:
+   ```bash
+   kubectl get pods -n citizen-dashboard
+   ```
+
+---
+
+## Teardown Instructions
+
+1. Uninstall Helm release:
+   ```bash
+   helm uninstall citizen-dashboard --namespace citizen-dashboard
+   ```
+
+2. Delete the namespace:
+   ```bash
+   kubectl delete namespace citizen-dashboard
+   ```
+
+---
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m "Add feature"`.
+4. Push the branch: `git push origin feature-name`.
+5. Submit a pull request.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
