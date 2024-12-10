@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "citizen-dashboard.name" . }}-data-fetcher
+  name: {{ include "citizen-dashboard.name" . }}-search-api
   labels:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/component: data-fetcher
+    app.kubernetes.io/component: search-api
 spec:
-  type: {{ .Values.dataFetcher.serviceType }}
+  type: {{ .Values.searchApi.serviceType }}
   ports:
-    - port: {{ .Values.dataFetcher.servicePort }}
-      targetPort: {{ .Values.dataFetcher.containerPort }}
+    - port: {{ .Values.searchApi.servicePort }}
+      targetPort: {{ .Values.searchApi.containerPort }}
       protocol: TCP
   selector:
     app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/component: data-fetcher
+    app.kubernetes.io/component: search-api

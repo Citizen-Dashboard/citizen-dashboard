@@ -1,12 +1,22 @@
 images:
   dataFetcher:
     repository: ghcr.io/citizen-dashboard/data-fetcher
-    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f                       
     pullPolicy: IfNotPresent
 
   dataStore:
     repository: ghcr.io/citizen-dashboard/data-store
-    tag: f07a88f1233d63bbe44d96f18e1a15e47c1e8ead          
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f                       
+    pullPolicy: IfNotPresent
+
+  syncElastic:
+    repository: ghcr.io/citizen-dashboard/sync-elastic
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f             
+    pullPolicy: IfNotPresent
+
+  searchApi:
+    repository: ghcr.io/citizen-dashboard/search-api
+    tag: e67c27664d70f8e4cd7405848c3476e154d8271f             
     pullPolicy: IfNotPresent
 
   postgres:
@@ -19,6 +29,11 @@ images:
     tag: latest
     pullPolicy: IfNotPresent
 
+  elasticsearch:
+    repository: docker.elastic.co/elasticsearch/elasticsearch
+    tag: 8.16.1
+    pullPolicy: IfNotPresent
+    
 imagePullSecrets:
   name: ghcr-secret
 
@@ -31,6 +46,18 @@ dataFetcher:
 dataStore:
   schedule: "0 0 * * *"
   containerPort: 5000
+
+syncElastic:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
+
+searchApi:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
 
 postgres:
   containerPort: 5432
@@ -48,6 +75,14 @@ pgadmin:
   servicePort: 8080
   serviceType: ClusterIP
   email: admin@example.com
+
+elasticsearch:
+  servicePort: 9200
+  serviceType: ClusterIP
+  configMapRef:
+      elasticsearch.yml: |
+        xpack.security.enabled: false
+        xpack.security.http.ssl.enabled: false
 
 secrets:
   dataFetcher:

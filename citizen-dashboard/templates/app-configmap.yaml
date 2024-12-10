@@ -17,6 +17,10 @@ data:
   DATA_STORE_HOST: {{ include "citizen-dashboard.name" . }}-data-store
   DATA_STORE_PORT: "{{ .Values.dataStore.servicePort }}"
 
-  # pgAdmin Configurations
-  PGADMIN_HOST: {{ include "citizen-dashboard.name" . }}-pgadmin
-  PGADMIN_PORT: "{{ .Values.pgadmin.servicePort }}"
+  # ElasticSearch Configurations
+  ES_HOST: {{ include "citizen-dashboard.name" . }}-elasticsearch
+  ES_PORT: "{{ .Values.elasticsearch.servicePort }}"
+
+  # Search API Configurations
+  SEARCH_API_HOST: {{ include "citizen-dashboard.name" . }}-search-api
+  SEARCH_API_PORT: "{{ .Values.searchApi.servicePort }}"

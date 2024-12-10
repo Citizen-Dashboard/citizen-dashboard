@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "citizen-dashboard.name" . }}-sync-elastic
+  labels:
+    app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: sync-elastic
+spec:
+  replicas: {{ .Values.syncElastic.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: sync-elastic
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "citizen-dashboard.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: sync-elastic
+    spec:
+      containers:
+        - name: sync-elastic
+          image: "{{ .Values.images.syncElastic.repository }}:{{ .Values.images.syncElastic.tag }}"
+          imagePullPolicy: {{ .Values.images.syncElastic.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.syncElastic.containerPort }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.syncElastic.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: {{ include "citizen-dashboard.name" . }}-config
+            - secretRef:
+                name: {{ include "citizen-dashboard.name" . }}-secrets
+      imagePullSecrets:
+        - name: ghcr-secret
