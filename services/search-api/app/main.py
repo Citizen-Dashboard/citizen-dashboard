@@ -32,10 +32,7 @@ def search_data():
         results = [
             {
                 "id": hit["_id"],
-                "source": {
-                    key: (value[:100] + "...") if isinstance(value, str) and len(value) > 100 else value
-                    for key, value in hit["_source"].items()
-                }
+                "source": hit["_source"]  # Remove truncation logic, include the full source
             }
             for hit in response['hits']['hits']
         ]
