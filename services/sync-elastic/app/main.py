@@ -46,8 +46,8 @@ def index_data_in_elasticsearch(data):
     app.logger.info("Connecting to Elasticsearch.")
     es_url = f"http://{ES_HOST}:{ES_PORT}"
     try:
-        app.logger.info(f"Connecting to ElasticSearch at {url}...")
-        es = Elasticsearch(url)
+        app.logger.info(f"Connecting to ElasticSearch at {es_url}...")
+        es = Elasticsearch(es_url)
         app.logger.info("Preparing data for bulk indexing.")
         actions = [
             {
