@@ -64,74 +64,91 @@ export const searchResultsLimit = 30;
  */
  export function getSearchQuery(term:string) {
     return {
-        "query": {
-          "bool": {
-            "should": [
-              {
-                "term": {
-                  "reference": {
-                    "value": term,
-                    "boost": 50.0
+        "size":`${searchResultsLimit}`,
+        "query":{
+            "bool": {
+              "should": [
+                {
+                  "term": {
+                    "reference": {
+                      "value": term,
+                      "boost": 50.0
+                    }
+                  }
+                },
+                {
+                  "term": {
+                    "decisionBodyName": {
+                      "value": term,
+                      "boost": 50.0
+                    }
+                  }
+                },
+                {
+                  "multi_match": {
+                    "query": term,
+                    "type": "phrase_prefix",
+                    "fields": [
+                      "agendaItemTitle^10",
+                      "agendaItemSummary",
+                      "agendaItemRecommendation^5",
+                      "decisionRecommendations^5",
+                      "decisionAdvice^5"
+                    ],
+                    "minimum_should_match": "2<80% 6<90%",
+                    "boost":30.0
+                  }
+                },
+                {
+                  "multi_match": {
+                    "query": term,
+                    "type": "most_fields",
+                    "operator": "and", 
+                    "fields": [
+                      "agendaItemTitle^10",
+                      "agendaItemSummary",
+                      "agendaItemRecommendation^5",
+                      "decisionRecommendations^5",
+                      "decisionAdvice^5"
+                    ],
+                    "minimum_should_match": "2<80% 6<90%",
+                    "boost":30.0
+                  }
+                },
+                {
+                  "multi_match": {
+                    "query": term,
+                    "type": "most_fields",
+                    "operator": "or", 
+                    "fields": [
+                      "agendaItemTitle^5",
+                      "agendaItemSummary",
+                      "agendaItemRecommendation^5",
+                      "decisionRecommendations^10",
+                      "decisionAdvice^10",
+                      "decisionBodyName^10"
+                    ],
+                    "minimum_should_match": "2<80% 6<90%"
                   }
                 }
-              },
-              {
-                "term": {
-                  "decisionBodyName": {
-                    "value": term,
-                    "boost": 50.0
-                  }
+              ]
+            }
+          },
+        "sort": [
+            {
+                "meetingDate": {
+                "order": "desc"
                 }
-              },
-              {
-                "multi_match": {
-                  "query": term,
-                  "type": "phrase_prefix",
-                  "fields": [
-                    "agendaItemTitle^10",
-                    "agendaItemSummary",
-                    "agendaItemRecommendation^5",
-                    "decisionRecommendations^5",
-                    "decisionAdvice^5"
-                  ],
-                  "minimum_should_match": "2<80% 6<90%",
-                  "boost":30.0
-                }
-              },
-              {
-                "multi_match": {
-                  "query": term,
-                  "type": "most_fields",
-                  "operator": "and", 
-                  "fields": [
-                    "agendaItemTitle^10",
-                    "agendaItemSummary",
-                    "agendaItemRecommendation^5",
-                    "decisionRecommendations^5",
-                    "decisionAdvice^5"
-                  ],
-                  "minimum_should_match": "2<80% 6<90%",
-                  "boost":30.0
-                }
-              },
-              {
-                "multi_match": {
-                  "query": term,
-                  "type": "most_fields",
-                  "operator": "or", 
-                  "fields": [
-                    "agendaItemTitle^5",
-                    "agendaItemSummary",
-                    "agendaItemRecommendation^5",
-                    "decisionRecommendations^10",
-                    "decisionAdvice^10",
-                    "decisionBodyName^10"
-                  ],
-                  "minimum_should_match": "2<80% 6<90%"
-                }
-              }
-            ]
-          }
+            }
+        ], 
+        "highlight": {
+            "fields": {
+                "ai_summary":{},
+                "agendaItemSummary":{},
+                "agendaItemRecommendation":{},
+                "decisionRecommendations":{},
+                "decisionAdvice":{}
+            }
         }
-      }
+    }
 }
