@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS city_council_meetings;
 
 -- Create the city_council_meetings table
 CREATE TABLE city_council_meetings (
-    id VARCHAR,
+    id VARCHAR PRIMARY KEY,
     term_id INTEGER,
     agenda_item_id INTEGER,
     council_agenda_item_id INTEGER,
@@ -12,7 +12,7 @@ CREATE TABLE city_council_meetings (
     item_process_id INTEGER,
     decision_body_name VARCHAR,
     meeting_date TIMESTAMP,
-    reference VARCHAR PRIMARY KEY,
+    reference VARCHAR,
     term_year VARCHAR,
     agenda_cd VARCHAR,
     meeting_number VARCHAR,

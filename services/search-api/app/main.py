@@ -26,7 +26,8 @@ def search_data():
                         "query": query,
                         "fields": ["*"]
                     }
-                }
+                },
+                "size": 100
             }
         )
         results = [
