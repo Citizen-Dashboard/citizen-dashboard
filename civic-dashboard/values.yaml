@@ -1,0 +1,95 @@
+images:
+  dataFetcher:
+    repository: ghcr.io/civic-dashboard/data-fetcher
+    tag: main-09abb227b5efaaeab72899c98949e4d0c6187106                       
+    pullPolicy: IfNotPresent
+
+  dataStore:
+    repository: ghcr.io/civic-dashboard/data-store
+    tag: main-09abb227b5efaaeab72899c98949e4d0c6187106                       
+    pullPolicy: IfNotPresent
+
+  syncElastic:
+    repository: ghcr.io/civic-dashboard/sync-elastic
+    tag: main-09abb227b5efaaeab72899c98949e4d0c6187106             
+    pullPolicy: IfNotPresent
+
+  searchApi:
+    repository: ghcr.io/civic-dashboard/search-api
+    tag: main-09abb227b5efaaeab72899c98949e4d0c6187106             
+    pullPolicy: IfNotPresent
+
+  postgres:
+    repository: postgres
+    tag: 17.2
+    pullPolicy: IfNotPresent
+
+  pgadmin:
+    repository: dpage/pgadmin4
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  elasticsearch:
+    repository: docker.elastic.co/elasticsearch/elasticsearch
+    tag: 8.16.1
+    pullPolicy: IfNotPresent
+    
+imagePullSecrets:
+  name: ghcr-secret
+
+dataFetcher: 
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
+
+dataStore:
+  schedule: "0 0 * * *"
+  containerPort: 5000
+
+syncElastic:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
+
+searchApi:
+  replicas: 1
+  containerPort: 5000
+  servicePort: 5000
+  serviceType: ClusterIP
+
+postgres:
+  containerPort: 5432
+  servicePort: 5432
+  database: citizen_dashboard
+  username: your_username
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mountPath: /var/lib/postgresql/data
+
+pgadmin:
+  containerPort: 8080
+  servicePort: 8080
+  serviceType: ClusterIP
+  email: admin@example.com
+
+elasticsearch:
+  servicePort: 9200
+  serviceType: ClusterIP
+  configMapRef:
+      elasticsearch.yml: |
+        xpack.security.enabled: false
+        xpack.security.http.ssl.enabled: false
+
+secrets:
+  dataFetcher:
+    apiKey: 'test-api-key'
+  dataStore:
+    dbPassword: 'test-db-password'
+  postgres:
+    password: 'test_password'
+  pgadmin:
+    password: 'admin'

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "civic-dashboard.name" . }}-postgres
+  labels:
+    app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgres.servicePort }}
+      targetPort: {{ .Values.postgres.containerPort }}
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: postgres
+

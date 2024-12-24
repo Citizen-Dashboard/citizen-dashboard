@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "citizen-dashboard"
+name = "civic-dashboard"
 version = "0.1.0"
 description = ""
 authors = ["yeralash <mishaneiman@gmail.com>"]
@@ -9,27 +9,8 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-requests = "^2.32.3"
-beautifulsoup4 = "^4.12.3"
-pandas = "^2.2.2"
-pyarrow = "^17.0.0"
-jupyter = "^1.0.0"
-sqlalchemy = "^2.0.32"
-psycopg2-binary = "^2.9.9"
-flask = "^3.0.3"
-flask-cors = "^4.0.1"
-python-dotenv = "^1.0.1"
-pyhelm = "^2.14.5"
-kubernetes = "^31.0.0"
-docker = "^7.1.0"
-pyyaml = "^6.0.2"
 pyhelm3 = "^0.4.0"
 kubernetes-asyncio = "^31.1.0"
-pydantic = "^2.9.2"
-asyncpg = "^0.30.0"
-lightkube = "^0.15.5"
-
-
 
 [build-system]
 requires = ["poetry-core"]

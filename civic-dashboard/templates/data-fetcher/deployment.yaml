@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "civic-dashboard.name" . }}-data-fetcher
+  labels:
+    app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: data-fetcher
+spec:
+  replicas: {{ .Values.dataFetcher.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: data-fetcher
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: data-fetcher
+    spec:
+      containers:
+        - name: data-fetcher
+          image: "{{ .Values.images.dataFetcher.repository }}:{{ .Values.images.dataFetcher.tag }}"
+          imagePullPolicy: {{ .Values.images.dataFetcher.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.dataFetcher.containerPort }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.dataFetcher.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+      imagePullSecrets:
+        - name: ghcr-secret
+  resources:
+    requests:
+      memory: "1G"
+      cpu: "1"

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "civic-dashboard.name" . }}-data-store
+  labels:
+    app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: data-store
+spec:
+  replicas: {{ .Values.dataStore.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: data-store
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "civic-dashboard.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: data-store
+    spec:
+      containers:
+        - name: data-store
+          image: "{{ .Values.images.dataStore.repository }}:{{ .Values.images.dataStore.tag }}"
+          imagePullPolicy: {{ .Values.images.dataStore.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.dataStore.containerPort | default 8000 }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.dataStore.containerPort | default 8000 }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: {{ include "civic-dashboard.name" . }}-config
+            - secretRef:
+                name: {{ include "civic-dashboard.name" . }}-secrets
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: ghcr-secret

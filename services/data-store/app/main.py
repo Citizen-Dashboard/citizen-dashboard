@@ -58,7 +58,7 @@ def insert_data_into_db(data):
             %(agendaItemSummary)s, %(agendaItemRecommendation)s, %(decisionRecommendations)s,
             %(decisionAdvice)s, %(subjectTerms)s, %(backgroundAttachmentId)s,
             %(agendaItemAddress)s, %(address)s, %(geoLocation)s, %(wardId)s
-        ) ON CONFLICT (reference) DO NOTHING
+        ) ON CONFLICT (id) DO NOTHING
         """
 
         records = data.get('Records', [])

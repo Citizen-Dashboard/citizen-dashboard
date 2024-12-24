@@ -1,5 +1,5 @@
 
-# Citizen Dashboard
+# Civic Dashboard
 
 The Citizen Dashboard is a Kubernetes-based platform that provides a suite of services for managing data, search, and synchronization. These services are containerized, orchestrated via Helm and Minikube, and designed for scalable deployments.
 
@@ -11,12 +11,12 @@ The following services make up the Citizen Dashboard:
 
 | **Service Name**                  | **Description**                               | **Port(s)** | **API Endpoints**                 |
 |-----------------------------------|-----------------------------------------------|-------------|------------------------------------|
-| `citizen-dashboard-data-fetcher`  | Fetches data from external APIs.              | 5000/TCP    | `/fetch-data`, `/healthz`         |
-| `citizen-dashboard-data-store`    | Manages and stores data fetched or processed. | 8000/TCP    | `/store-data`, `/healthz`         |
-| `citizen-dashboard-elasticsearch` | Full-text search and indexing service.        | 9200/TCP    | N/A                                |
-| `citizen-dashboard-postgres`      | Database for structured data storage.         | 5432/TCP    | N/A                                |
-| `citizen-dashboard-search-api`    | Handles search queries using Elasticsearch.   | 5000/TCP    | `/search`, `/healthz`             |
-| `citizen-dashboard-sync-elastic`  | Syncs data to Elasticsearch.                  | 5000/TCP    | `/ingest`, `/healthz`             |
+| `civic-dashboard-data-fetcher`  | Fetches data from external APIs.              | 5000/TCP    | `/fetch-data`, `/healthz`         |
+| `civic-dashboard-data-store`    | Manages and stores data fetched or processed. | 8000/TCP    | `/store-data`, `/healthz`         |
+| `civic-dashboard-elasticsearch` | Full-text search and indexing service.        | 9200/TCP    | N/A                                |
+| `civic-dashboard-postgres`      | Database for structured data storage.         | 5432/TCP    | N/A                                |
+| `civic-dashboard-search-api`    | Handles search queries using Elasticsearch.   | 5000/TCP    | `/search`, `/healthz`             |
+| `civic-dashboard-sync-elastic`  | Syncs data to Elasticsearch.                  | 5000/TCP    | `/ingest`, `/healthz`             |
 | `pgadmin`                         | Web-based database administration tool.       | 8080/TCP    | Web Interface                      |
 
 ---
@@ -151,12 +151,12 @@ Install `kubectl`:
 
 2. **Create Namespace**:
    ```bash
-   kubectl create namespace citizen-dashboard
+   kubectl create namespace civic-dashboard
    ```
 
 3. **Add GHCR Secret**:
    ```bash
-   kubectl create secret docker-registry ghcr-secret      --docker-server=ghcr.io      --docker-username=github_username      --docker-password=your_ghcr_token      --docker-email=github_email      --namespace=citizen-dashboard
+   kubectl create secret docker-registry ghcr-secret      --docker-server=ghcr.io      --docker-username=github_username      --docker-password=your_ghcr_token      --docker-email=github_email      --namespace=civic-dashboard
    ```
 
 4. **Deploy the Application**:
@@ -166,7 +166,7 @@ Install `kubectl`:
 
 5. **Verify Deployment**:
    ```bash
-   kubectl get pods -n citizen-dashboard
+   kubectl get pods -n civic-dashboard
    ```
 
 ---
@@ -175,12 +175,12 @@ Install `kubectl`:
 
 1. Uninstall Helm release:
    ```bash
-   helm uninstall citizen-dashboard --namespace citizen-dashboard
+   helm uninstall civic-dashboard --namespace civic-dashboard
    ```
 
 2. Delete the namespace:
    ```bash
-   kubectl delete namespace citizen-dashboard
+   kubectl delete namespace civic-dashboard
    ```
 
 ---
